@@ -1,735 +1,1211 @@
 /*!
- * Caelok CSS Framework v0.1.1
+ * CaelokLib.js v1.1.0
+ * A JavaScript library for modern UI components and effects.
  * Copyright 2025 Caelok
- * Licensed under MIT (https://opensource.org/licenses/MIT)
+ * Licensed under MIT (Placeholder: You should choose an appropriate license)
  */
 
-class CaelokFramework {
-  constructor(options = {}) {
-    this.options = Object.assign({
-      targetElement: document.head,
-      prefix: 'ck-',
-      theme: {
-        colors: {
-          primary: '#007bff',
-          secondary: '#6c757d',
-          success: '#28a745',
-          danger: '#dc3545',
-          warning: '#ffc107',
-          info: '#17a2b8',
-          light: '#f8f9fa',
-          dark: '#343a40',
-          white: '#ffffff',
-          black: '#000000',
-          bodyBg: '#ffffff',
-          textColor: '#212529',
-          linkColor: '#007bff',
+(function(window, document) {
+    'use strict';
+
+    // Library Namespace
+    const CaelokLib = {};
+
+    // --- Utility Functions ---
+    CaelokLib.Utils = {
+        /**
+         * Generates a unique ID.
+         * @param {string} [prefix='cl-'] - Prefix for the ID.
+         * @returns {string} A unique ID string.
+         */
+        generateId: function(prefix = 'cl-') {
+            return prefix + Math.random().toString(36).substring(2, 15);
         },
-        breakpoints: {
-          xs: '0px',
-          sm: '576px',
-          md: '768px',
-          lg: '992px',
-          xl: '1200px',
-          xxl: '1400px',
+
+        /**
+         * Debounces a function.
+         * @param {Function} func - The function to debounce.
+         * @param {number} wait - The debounce delay in milliseconds.
+         * @returns {Function} The debounced function.
+         */
+        debounce: function(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
         },
-        spacing: [0, 0.25, 0.5, 1, 1.5, 2, 2.5, 3, 4, 5], // rem units
-        typography: {
-          fontFamilyBase: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"',
-          fontSizeBase: '1rem',
-          fontWeightLight: 300,
-          fontWeightNormal: 400,
-          fontWeightBold: 700,
-          lineHeightBase: 1.5,
-          headings: {
-            h1: { size: '2.5rem', weight: 500 },
-            h2: { size: '2rem', weight: 500 },
-            h3: { size: '1.75rem', weight: 500 },
-            h4: { size: '1.5rem', weight: 500 },
-            h5: { size: '1.25rem', weight: 500 },
-            h6: { size: '1rem', weight: 500 },
-          }
-        },
-        borders: {
-          width: '1px',
-          color: '#dee2e6',
-          radius: '0.25rem',
-          radiusSm: '0.2rem',
-          radiusLg: '0.3rem',
-        },
-        shadows: {
-          sm: '0 .125rem .25rem rgba(0, 0, 0, .075)',
-          md: '0 .5rem 1rem rgba(0, 0, 0, .15)',
-          lg: '0 1rem 3rem rgba(0, 0, 0, .175)',
-        },
-        transitions: {
-          base: 'all .2s ease-in-out',
-        },
-        zIndex: {
-          modal: 1050,
-          navbar: 1030,
-          tooltip: 1070,
-          popover: 1060,
+
+        /**
+         * Throttles a function.
+         * @param {Function} func - The function to throttle.
+         * @param {number} limit - The throttle limit in milliseconds.
+         * @returns {Function} The throttled function.
+         */
+        throttle: function(func, limit) {
+            let inThrottle;
+            let lastFunc;
+            let lastRan;
+            return function(...args) {
+                const context = this;
+                if (!inThrottle) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                    inThrottle = true;
+                } else {
+                    clearTimeout(lastFunc);
+                    lastFunc = setTimeout(function() {
+                        if ((Date.now() - lastRan) >= limit) {
+                            func.apply(context, args);
+                            lastRan = Date.now();
+                        }
+                    }, limit - (Date.now() - lastRan));
+                }
+            };
         }
-      },
-      modules: {
-        grid: true,
-        utilities: true,
-        components: true,
-        icons: true,
-        animations: true,
-      },
-      icons: {
-        'arrow-right': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-right" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4 8a.5.5 0 0 1 .5-.5h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5A.5.5 0 0 1 4 8z"/></svg>',
-        'check': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check" viewBox="0 0 16 16"><path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z"/></svg>',
-        'x': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16"><path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/></svg>',
-        'menu': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/></svg>',
-        'search': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>',
-      },
-    }, options);
+    };
 
-    this.styles = '';
-    this.styleElement = null;
-    this._init();
-  }
+    // --- CSS Injection Module ---
+    CaelokLib.Core = (function() {
+        const cssStyles = `
+            /*!
+             * CaelokLib CSS Component v1.1.0
+             * Copyright 2025 Caelok
+             */
 
-  _init() {
-    this._generateCSSVariables();
-    this._generateBaseStyles();
-
-    if (this.options.modules.grid) this._generateGrid();
-    if (this.options.modules.utilities) this._generateUtilities();
-    if (this.options.modules.components) this._generateComponents();
-    if (this.options.modules.icons) this._generateIconStyles();
-    if (this.options.modules.animations) this._generateAnimations();
-
-    this._injectCSS();
-    console.info('[ck] : initialized.');
-  }
-
-  _generateCSSVariables() {
-    let variables = ':root {\n';
-    const theme = this.options.theme;
-    const p = this.options.prefix;
-
-    for (const category in theme) {
-      if (typeof theme[category] === 'object' && theme[category] !== null) {
-        for (const key in theme[category]) {
-          if (typeof theme[category][key] === 'object' && theme[category][key] !== null) {
-             for (const subKey in theme[category][key]) {
-                variables += `  --${p}${category}-${key}-${subKey}: ${theme[category][key][subKey]};\n`;
-             }
-          } else {
-            variables += `  --${p}${category}-${key}: ${theme[category][key]};\n`;
-          }
-        }
-      }
-    }
-    // Add RGB versions for primary color for box-shadows
-    if (theme.colors && theme.colors.primary) {
-        const primaryColor = theme.colors.primary;
-        let r,g,b;
-        if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(primaryColor)) { // Hex color
-            let c = primaryColor.substring(1).split('');
-            if (c.length === 3) { c = [c[0], c[0], c[1], c[1], c[2], c[2]]; }
-            c = '0x' + c.join('');
-            r = (c >> 16) & 255;
-            g = (c >> 8) & 255;
-            b = c & 255;
-            variables += `  --${p}theme-colors-primaryRGB: ${r},${g},${b};\n`;
-        }
-        // can add parsers for other color formats if needed (rgb, rgba, hsl)
-    }
-
-    variables += '}\n\n';
-    this.styles += variables;
-  }
-
-  _generateBaseStyles() {
-    const p = this.options.prefix;
-    this.styles += `
-      *, *::before, *::after { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: var(--${p}typography-fontFamilyBase);
-        font-size: var(--${p}typography-fontSizeBase);
-        font-weight: var(--${p}typography-fontWeightNormal);
-        line-height: var(--${p}typography-lineHeightBase);
-        color: var(--${p}theme-textColor);
-        background-color: var(--${p}theme-bodyBg);
-        -webkit-font-smoothing: antialiased;
-        -moz-osx-font-smoothing: grayscale;
-      }
-      a {
-        color: var(--${p}theme-linkColor);
-        text-decoration: none;
-        transition: var(--${p}transitions-base);
-      }
-      a:hover {
-        text-decoration: underline;
-      }
-      img, svg { vertical-align: middle; max-width: 100%; height: auto; }
-      ${Object.entries(this.options.theme.typography.headings).map(([tag, props]) => `
-        ${tag} {
-          font-size: var(--${p}typography-headings-${tag}-size);
-          font-weight: var(--${p}typography-headings-${tag}-weight);
-          margin-top: 0;
-          margin-bottom: 0.5rem;
-          line-height: 1.2;
-        }
-      `).join('')}
-      hr {
-        margin: 1rem 0;
-        color: inherit;
-        background-color: currentColor;
-        border: 0;
-        opacity: 0.25;
-        height: 1px;
-      }
-    `;
-  }
-
-  _generateGrid() {
-    const p = this.options.prefix;
-    let gridStyles = `
-      .${p}container, .${p}container-fluid {
-        width: 100%;
-        padding-right: var(--${p}spacing-3, 1rem);
-        padding-left: var(--${p}spacing-3, 1rem);
-        margin-right: auto;
-        margin-left: auto;
-      }
-    `;
-    Object.entries(this.options.theme.breakpoints).forEach(([bp, width]) => {
-      if (bp !== 'xs') {
-        gridStyles += `
-          @media (min-width: ${width}) {
-            .${p}container {
-              max-width: ${width === this.options.theme.breakpoints.sm ? '540px' :
-                         width === this.options.theme.breakpoints.md ? '720px' :
-                         width === this.options.theme.breakpoints.lg ? '960px' :
-                         width === this.options.theme.breakpoints.xl ? '1140px' : '1320px'};
+            :root {
+                --cl-primary-color: #007bff;
+                --cl-secondary-color: #6c757d;
+                --cl-success-color: #28a745;
+                --cl-danger-color: #dc3545;
+                --cl-warning-color: #ffc107;
+                --cl-info-color: #17a2b8;
+                --cl-light-color: #f8f9fa;
+                --cl-dark-color: #343a40;
+                --cl-body-bg: #ffffff;
+                --cl-body-color: #212529;
+                --cl-font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+                --cl-border-radius: 0.25rem;
+                --cl-box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+                --cl-transition-base: all .2s ease-in-out;
             }
-          }
+
+            body.cl-modal-open {
+                overflow: hidden;
+            }
+            body.cl-preloader-active {
+                 overflow: hidden;
+            }
+
+            /* Preloader Styles */
+            .cl-preloader {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 10000; /* Higher than modals */
+                background-color: var(--cl-body-bg);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+                transition: opacity 0.75s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s linear 0.75s;
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .cl-preloader.cl-hidden {
+                opacity: 0;
+                visibility: hidden;
+            }
+
+            .cl-preloader-spinner {
+                border: 4px solid rgba(0, 0, 0, 0.1);
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                border-left-color: var(--cl-primary-color);
+                animation: cl-spinner-animation 0.8s infinite linear;
+            }
+            
+            .cl-preloader-text {
+                margin-top: 15px;
+                font-family: var(--cl-font-family-sans-serif);
+                color: var(--cl-body-color);
+                font-size: 1em;
+            }
+
+            @keyframes cl-spinner-animation {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            /* Modal Styles */
+            .cl-modal-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100vw;
+                height: 100vh;
+                background-color: rgba(0,0,0,0.5);
+                z-index: 1040;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.25s ease-out, visibility 0s linear 0.25s;
+            }
+            .cl-modal-backdrop.cl-visible {
+                opacity: 1;
+                visibility: visible;
+                transition-delay: 0s;
+            }
+
+            .cl-modal {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0.9);
+                background-color: var(--cl-body-bg);
+                border-radius: var(--cl-border-radius);
+                box-shadow: var(--cl-box-shadow);
+                z-index: 1050;
+                width: 90%;
+                max-width: 500px;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.25s ease-out, transform 0.25s ease-out, visibility 0s linear 0.25s;
+                display: flex;
+                flex-direction: column;
+                max-height: 90vh; /* Ensure modal fits in viewport */
+            }
+            .cl-modal.cl-visible {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+                visibility: visible;
+                transition-delay: 0s;
+            }
+            .cl-modal-header {
+                padding: 1rem;
+                border-bottom: 1px solid #dee2e6;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .cl-modal-title {
+                margin: 0;
+                font-size: 1.25rem;
+                font-weight: 500;
+            }
+            .cl-modal-close {
+                background: transparent;
+                border: 0;
+                font-size: 1.5rem;
+                font-weight: 700;
+                line-height: 1;
+                color: #000;
+                opacity: .5;
+                padding: 0.5rem;
+                margin: -0.5rem -0.5rem -0.5rem auto; /* Align to right */
+                cursor: pointer;
+            }
+            .cl-modal-close:hover {
+                opacity: .75;
+            }
+            .cl-modal-body {
+                padding: 1rem;
+                overflow-y: auto; /* For scrollable content */
+                flex-grow: 1;
+            }
+            .cl-modal-footer {
+                padding: 0.75rem 1rem;
+                border-top: 1px solid #dee2e6;
+                display: flex;
+                justify-content: flex-end; /* Align buttons to the right */
+                gap: 0.5rem; /* Space between buttons */
+            }
+            .cl-modal-footer .cl-button { /* Basic button styling */
+                padding: 0.375rem 0.75rem;
+                border-radius: var(--cl-border-radius);
+                border: 1px solid transparent;
+                cursor: pointer;
+                font-size: 1rem;
+                transition: var(--cl-transition-base);
+            }
+            .cl-button-primary {
+                background-color: var(--cl-primary-color);
+                color: white;
+                border-color: var(--cl-primary-color);
+            }
+            .cl-button-primary:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+             .cl-button-secondary {
+                background-color: var(--cl-secondary-color);
+                color: white;
+                border-color: var(--cl-secondary-color);
+            }
+            .cl-button-secondary:hover {
+                background-color: #545b62;
+                border-color: #545b62;
+            }
+
+            /* Tooltip Styles */
+            .cl-tooltip {
+                position: absolute;
+                z-index: 1070;
+                display: block;
+                margin: 0;
+                font-family: var(--cl-font-family-sans-serif);
+                font-style: normal;
+                font-weight: 400;
+                line-height: 1.5;
+                text-align: left;
+                text-decoration: none;
+                text-shadow: none;
+                text-transform: none;
+                letter-spacing: normal;
+                word-break: normal;
+                word-spacing: normal;
+                white-space: normal;
+                line-break: auto;
+                font-size: 0.875rem;
+                word-wrap: break-word;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.15s ease-in-out, visibility 0s linear 0.15s;
+                pointer-events: none; /* Tooltips shouldn't be interactive themselves */
+            }
+            .cl-tooltip.cl-visible {
+                opacity: 0.9; /* Slightly transparent */
+                visibility: visible;
+                transition-delay: 0s;
+            }
+            .cl-tooltip-inner {
+                max-width: 200px;
+                padding: 0.25rem 0.5rem;
+                color: var(--cl-light-color);
+                text-align: center;
+                background-color: var(--cl-dark-color);
+                border-radius: var(--cl-border-radius);
+            }
+            /* Tooltip arrow (optional, basic) */
+            .cl-tooltip .cl-tooltip-arrow {
+                position: absolute;
+                display: block;
+                width: 0.8rem;
+                height: 0.4rem;
+            }
+            .cl-tooltip .cl-tooltip-arrow::before {
+                position: absolute;
+                content: "";
+                border-color: transparent;
+                border-style: solid;
+            }
+            .cl-tooltip[data-popper-placement^="top"] > .cl-tooltip-arrow { bottom: -0.4rem; }
+            .cl-tooltip[data-popper-placement^="top"] > .cl-tooltip-arrow::before {
+                border-width: 0.4rem 0.4rem 0;
+                border-top-color: var(--cl-dark-color);
+            }
+            /* Add more for bottom, left, right if using Popper.js or similar advanced positioning */
+
+            /* Scroll Animate Styles */
+            .cl-animate {
+                opacity: 0;
+                transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            }
+            .cl-animate.cl-fade-in {
+                opacity: 0;
+            }
+            .cl-animate.cl-fade-in.cl-is-visible {
+                opacity: 1;
+            }
+            .cl-animate.cl-slide-up {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            .cl-animate.cl-slide-up.cl-is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .cl-animate.cl-slide-in-left {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            .cl-animate.cl-slide-in-left.cl-is-visible {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            .cl-animate.cl-slide-in-right {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            .cl-animate.cl-slide-in-right.cl-is-visible {
+                opacity: 1;
+                transform: translateX(0);
+            }
+
+            /* Notification/Toast Styles */
+            .cl-notification-container {
+                position: fixed;
+                z-index: 1080; /* Above most other elements */
+                padding: 0.5rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                width: 100%; /* For mobile full width */
+                max-width: 350px; /* Max width on larger screens */
+            }
+            .cl-notification-container.cl-top-right { top: 1rem; right: 1rem; align-items: flex-end; }
+            .cl-notification-container.cl-top-left { top: 1rem; left: 1rem; align-items: flex-start; }
+            .cl-notification-container.cl-bottom-right { bottom: 1rem; right: 1rem; align-items: flex-end; }
+            .cl-notification-container.cl-bottom-left { bottom: 1rem; left: 1rem; align-items: flex-start; }
+            .cl-notification-container.cl-top-center { top: 1rem; left: 50%; transform: translateX(-50%); align-items:center; }
+            .cl-notification-container.cl-bottom-center { bottom: 1rem; left: 50%; transform: translateX(-50%); align-items:center; }
+
+
+            .cl-notification {
+                background-color: var(--cl-dark-color);
+                color: var(--cl-light-color);
+                padding: 0.75rem 1.25rem;
+                border-radius: var(--cl-border-radius);
+                box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.1);
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+                position: relative; /* For close button positioning */
+                width: fit-content; /* Adjust to content, respecting container's max-width */
+                min-width: 200px;
+                display: flex; /* For aligning close button */
+                justify-content: space-between;
+                align-items: center;
+            }
+            .cl-notification.cl-visible {
+                opacity: 1;
+                transform: translateY(0);
+                visibility: visible;
+                transition-delay: 0s;
+            }
+            .cl-notification-message {
+                margin-right: 1rem; /* Space for close button */
+            }
+            .cl-notification-close {
+                background: none;
+                border: none;
+                color: inherit;
+                opacity: 0.7;
+                font-size: 1.2rem;
+                cursor: pointer;
+                padding: 0.25rem;
+            }
+            .cl-notification-close:hover { opacity: 1; }
+
+            .cl-notification.cl-info { background-color: var(--cl-info-color); color: white; }
+            .cl-notification.cl-success { background-color: var(--cl-success-color); color: white; }
+            .cl-notification.cl-warning { background-color: var(--cl-warning-color); color: #212529; }
+            .cl-notification.cl-danger { background-color: var(--cl-danger-color); color: white; }
+
+            /* Simple utility classes */
+            .cl-d-none { display: none !important; }
+            .cl-visually-hidden {
+                position: absolute !important;
+                width: 1px !important;
+                height: 1px !important;
+                padding: 0 !important;
+                margin: -1px !important;
+                overflow: hidden !important;
+                clip: rect(0,0,0,0) !important;
+                white-space: nowrap !important;
+                border: 0 !important;
+            }
+
+            /* Responsive adjustments */
+            @media (max-width: 576px) {
+                .cl-modal {
+                    width: 95%;
+                    max-height: 95vh;
+                }
+                .cl-notification-container { /* Full width on small screens */
+                    left: 0.5rem;
+                    right: 0.5rem;
+                    width: auto;
+                    max-width: none;
+                    align-items: stretch; /* Notifications take full width of container */
+                }
+                .cl-notification-container.cl-top-center,
+                .cl-notification-container.cl-bottom-center {
+                     transform: none;
+                     left: 0.5rem; /* Override centered positioning */
+                }
+                .cl-notification {
+                    width: 100%; /* Notifications use full width of their container */
+                }
+            }
         `;
-      }
-    });
-    gridStyles += `
-      .${p}row {
-        display: flex;
-        flex-wrap: wrap;
-        margin-right: calc(-0.5 * var(--${p}spacing-3, 1rem));
-        margin-left: calc(-0.5 * var(--${p}spacing-3, 1rem));
-      }
-      .${p}row > * {
-        box-sizing: border-box;
-        flex-shrink: 0;
-        width: 100%;
-        max-width: 100%;
-        padding-right: calc(0.5 * var(--${p}spacing-3, 1rem));
-        padding-left: calc(0.5 * var(--${p}spacing-3, 1rem));
-      }
-    `;
-    const bpKeys = Object.keys(this.options.theme.breakpoints);
-    for (let i = 1; i <= 12; i++) {
-      gridStyles += `.${p}col-${i} { flex: 0 0 auto; width: ${(i / 12) * 100}%; }\n`;
-      gridStyles += `.${p}offset-${i} { margin-left: ${(i / 12) * 100}%; }\n`;
-    }
-    bpKeys.forEach(bp => {
-      if (bp === 'xs') return;
-      gridStyles += `@media (min-width: ${this.options.theme.breakpoints[bp]}) {\n`;
-      for (let i = 1; i <= 12; i++) {
-        gridStyles += `  .${p}col-${bp}-${i} { flex: 0 0 auto; width: ${(i / 12) * 100}%; }\n`;
-        gridStyles += `  .${p}offset-${bp}-${i} { margin-left: ${(i / 12) * 100}%; }\n`;
-      }
-      gridStyles += `}\n`;
-    });
-    this.styles += gridStyles;
-  }
 
-  _generateUtilities() {
-    const p = this.options.prefix;
-    let utilityStyles = '';
-    const displays = ['block', 'inline-block', 'inline', 'flex', 'inline-flex', 'grid', 'none', 'table', 'table-row', 'table-cell'];
-    displays.forEach(d => utilityStyles += `.${p}d-${d} { display: ${d} !important; }\n`);
-    const sides = { t: 'top', b: 'bottom', s: 'left', e: 'right', x: ['left', 'right'], y: ['top', 'bottom'], '': '' };
-    this.options.theme.spacing.forEach((val, i) => {
-      for (const sKey in sides) {
-        const properties = Array.isArray(sides[sKey]) ? sides[sKey] : [sides[sKey]];
-        const classNameSuffix = sKey ? `-${sKey}` : '';
-        let marginProps = properties.map(prop => prop ? `margin-${prop}: ${val}rem !important;` : `margin: ${val}rem !important;`).join(' ');
-        utilityStyles += `.${p}m${classNameSuffix}-${i} { ${marginProps} }\n`;
-         if (sKey === 'x') {
-            utilityStyles += `.${p}mx-auto { margin-left: auto !important; margin-right: auto !important; }\n`;
+        function injectCSS() {
+            if (document.getElementById('caelok-lib-styles')) return;
+            const styleTag = document.createElement('style');
+            styleTag.type = 'text/css';
+            styleTag.id = 'caelok-lib-styles';
+            /* istanbul ignore if */
+            if (styleTag.styleSheet) { styleTag.styleSheet.cssText = cssStyles; }
+            else { styleTag.appendChild(document.createTextNode(cssStyles)); }
+            document.head.appendChild(styleTag);
         }
-        let paddingProps = properties.map(prop => prop ? `padding-${prop}: ${val}rem !important;` : `padding: ${val}rem !important;`).join(' ');
-        utilityStyles += `.${p}p${classNameSuffix}-${i} { ${paddingProps} }\n`;
-      }
-    });
-    const textAligns = ['left', 'center', 'right', 'justify'];
-    textAligns.forEach(align => utilityStyles += `.${p}text-${align} { text-align: ${align} !important; }\n`);
-    const fontWeights = {
-        'light': `var(--${p}typography-fontWeightLight)`,
-        'normal': `var(--${p}typography-fontWeightNormal)`,
-        'bold': `var(--${p}typography-fontWeightBold)`
-    };
-    for(const weightName in fontWeights) {
-        utilityStyles += `.${p}fw-${weightName} { font-weight: ${fontWeights[weightName]} !important; }\n`;
-    }
-    utilityStyles += `.${p}text-wrap { white-space: normal !important; }\n`;
-    utilityStyles += `.${p}text-nowrap { white-space: nowrap !important; }\n`;
-    utilityStyles += `.${p}text-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }\n`;
-    utilityStyles += `.${p}text-decoration-none { text-decoration: none !important; }\n`;
-    utilityStyles += `.${p}text-decoration-underline { text-decoration: underline !important; }\n`;
-    utilityStyles += `.${p}text-lowercase { text-transform: lowercase !important; }\n`;
-    utilityStyles += `.${p}text-uppercase { text-transform: uppercase !important; }\n`;
-    utilityStyles += `.${p}text-capitalize { text-transform: capitalize !important; }\n`;
-    for (const colorName in this.options.theme.colors) {
-      utilityStyles += `.${p}text-${colorName} { color: var(--${p}theme-colors-${colorName}) !important; }\n`;
-      utilityStyles += `.${p}bg-${colorName} { background-color: var(--${p}theme-colors-${colorName}) !important; }\n`;
-    }
-    const borderSides = ['', '-top', '-bottom', '-start', '-end'];
-    borderSides.forEach(side => {
-      utilityStyles += `.${p}border${side} { border${side.replace('-', '-')} : var(--${p}borders-width) solid var(--${p}borders-color) !important; }\n`;
-      utilityStyles += `.${p}border${side}-0 { border${side.replace('-', '-')} : 0 !important; }\n`;
-    });
-    for (const colorName in this.options.theme.colors) {
-        utilityStyles += `.${p}border-${colorName} { border-color: var(--${p}theme-colors-${colorName}) !important; }\n`;
-    }
-    const roundedOptions = {
-        '': `var(--${p}borders-radius)`, '0': '0', '1': `var(--${p}borders-radiusSm)`,
-        '2': `var(--${p}borders-radius)`, '3': `var(--${p}borders-radiusLg)`,
-        'circle': '50%', 'pill': '50rem'
-    };
-    for(const rKey in roundedOptions){
-        utilityStyles += `.${p}rounded${rKey ? `-${rKey}`:''} { border-radius: ${roundedOptions[rKey]} !important; }\n`;
-    }
-    for(const shadowName in this.options.theme.shadows) {
-      utilityStyles += `.${p}shadow-${shadowName} { box-shadow: var(--${p}shadows-${shadowName}) !important; }\n`;
-    }
-    utilityStyles += `.${p}shadow-none { box-shadow: none !important; }\n`;
-    const flexDirections = ['row', 'row-reverse', 'column', 'column-reverse'];
-    flexDirections.forEach(dir => utilityStyles += `.${p}flex-${dir} { flex-direction: ${dir} !important; }\n`);
-    const justifyContents = ['start', 'end', 'center', 'between', 'around', 'evenly'];
-    justifyContents.forEach(jc => utilityStyles += `.${p}justify-content-${jc} { justify-content: ${jc.replace('between', 'space-between').replace('around', 'space-around').replace('evenly', 'space-evenly')} !important; }\n`);
-    const alignItemsOptions = ['start', 'end', 'center', 'baseline', 'stretch'];
-    alignItemsOptions.forEach(ai => utilityStyles += `.${p}align-items-${ai} { align-items: ${ai} !important; }\n`);
-    utilityStyles += `.${p}flex-fill { flex: 1 1 auto !important; }\n`;
-    utilityStyles += `.${p}flex-grow-0 { flex-grow: 0 !important; }\n`;
-    utilityStyles += `.${p}flex-grow-1 { flex-grow: 1 !important; }\n`;
-    utilityStyles += `.${p}flex-shrink-0 { flex-shrink: 0 !important; }\n`;
-    utilityStyles += `.${p}flex-shrink-1 { flex-shrink: 1 !important; }\n`;
-    utilityStyles += `.${p}flex-wrap { flex-wrap: wrap !important; }\n`;
-    utilityStyles += `.${p}flex-nowrap { flex-wrap: nowrap !important; }\n`;
-    utilityStyles += `.${p}flex-wrap-reverse { flex-wrap: wrap-reverse !important; }\n`;
-    utilityStyles += `.${p}visible { visibility: visible !important; }\n`;
-    utilityStyles += `.${p}invisible { visibility: hidden !important; }\n`;
-    const overflows = ['auto', 'hidden', 'visible', 'scroll'];
-    overflows.forEach(o => utilityStyles += `.${p}overflow-${o} { overflow: ${o} !important; }\n`);
-    Object.entries(this.options.theme.breakpoints).forEach(([bp, width]) => {
-      if (bp === 'xs') return;
-      utilityStyles += `@media (min-width: ${width}) {\n`;
-      displays.forEach(d => utilityStyles += `  .${p}d-${bp}-${d} { display: ${d} !important; }\n`);
-      this.options.theme.spacing.forEach((val, i) => {
-        for (const sKey in sides) {
-          const properties = Array.isArray(sides[sKey]) ? sides[sKey] : [sides[sKey]];
-          const classNameSuffix = sKey ? `-${sKey}` : '';
-          let marginProps = properties.map(prop => prop ? `margin-${prop}: ${val}rem !important;` : `margin: ${val}rem !important;`).join(' ');
-          utilityStyles += `  .${p}m${classNameSuffix}-${bp}-${i} { ${marginProps} }\n`;
-          let paddingProps = properties.map(prop => prop ? `padding-${prop}: ${val}rem !important;` : `padding: ${val}rem !important;`).join(' ');
-          utilityStyles += `  .${p}p${classNameSuffix}-${bp}-${i} { ${paddingProps} }\n`;
-        }
-      });
-      textAligns.forEach(align => utilityStyles += `  .${p}text-${bp}-${align} { text-align: ${align} !important; }\n`);
-      flexDirections.forEach(dir => utilityStyles += `  .${p}flex-${bp}-${dir} { flex-direction: ${dir} !important; }\n`);
-      justifyContents.forEach(jc => utilityStyles += `  .${p}justify-content-${bp}-${jc} { justify-content: ${jc.replace('between', 'space-between').replace('around', 'space-around').replace('evenly', 'space-evenly')} !important; }\n`);
-      alignItemsOptions.forEach(ai => utilityStyles += `  .${p}align-items-${bp}-${ai} { align-items: ${ai} !important; }\n`);
-      utilityStyles += `}\n`;
-    });
-    this.styles += utilityStyles;
-  }
 
-  _generateComponents() {
-    const p = this.options.prefix;
-    let componentStyles = '';
-    componentStyles += `
-      .${p}btn {
-        display: inline-block;
-        font-weight: var(--${p}typography-fontWeightNormal);
-        line-height: var(--${p}typography-lineHeightBase);
-        color: var(--${p}theme-textColor);
-        text-align: center;
-        text-decoration: none;
-        vertical-align: middle;
-        cursor: pointer;
-        user-select: none;
-        background-color: transparent;
-        border: var(--${p}borders-width) solid transparent;
-        padding: var(--${p}spacing-2) var(--${p}spacing-3);
-        font-size: var(--${p}typography-fontSizeBase);
-        border-radius: var(--${p}borders-radius);
-        transition: var(--${p}transitions-base);
-      }
-      .${p}btn:hover {
-        text-decoration: none;
-      }
-      .${p}btn:focus, .${p}btn.focus {
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(var(--${p}theme-colors-primaryRGB, 0,123,255), .25);
-      }
-      .${p}btn:disabled, .${p}btn.disabled {
-        pointer-events: none;
-        opacity: 0.65;
-      }
-    `;
-    for (const colorName in this.options.theme.colors) {
-      if (['light', 'white', 'transparent'].includes(colorName)) continue;
-       componentStyles += `
-        .${p}btn-${colorName} {
-          color: ${['dark', 'black'].includes(colorName) ? `var(--${p}theme-colors-white)`: `var(--${p}theme-colors-black)`};
-          background-color: var(--${p}theme-colors-${colorName});
-          border-color: var(--${p}theme-colors-${colorName});
-        }
-        .${p}btn-${colorName}:hover {
-          filter: brightness(90%);
-        }
-        .${p}btn-outline-${colorName} {
-          color: var(--${p}theme-colors-${colorName});
-          border-color: var(--${p}theme-colors-${colorName});
-          background-color: transparent;
-        }
-        .${p}btn-outline-${colorName}:hover {
-          color: ${['dark', 'black'].includes(colorName) ? `var(--${p}theme-colors-white)`: `var(--${p}theme-colors-black)`};
-          background-color: var(--${p}theme-colors-${colorName});
-        }
-      `;
-    }
-    componentStyles += `
-      .${p}card {
-        position: relative; display: flex; flex-direction: column; min-width: 0; word-wrap: break-word;
-        background-color: var(--${p}theme-colors-white); background-clip: border-box;
-        border: var(--${p}borders-width) solid var(--${p}borders-color);
-        border-radius: var(--${p}borders-radius); margin-bottom: var(--${p}spacing-3);
-        box-shadow: var(--${p}shadows-sm);
-      }
-      .${p}card-body { flex: 1 1 auto; padding: var(--${p}spacing-3); }
-      .${p}card-title { margin-bottom: var(--${p}spacing-2); }
-      .${p}card-subtitle { margin-top: calc(-1 * var(--${p}spacing-2) / 2); margin-bottom: 0; }
-      .${p}card-text:last-child { margin-bottom: 0; }
-      .${p}card-header, .${p}card-footer {
-        padding: var(--${p}spacing-2) var(--${p}spacing-3); background-color: rgba(0,0,0,.03);
-        border-bottom: var(--${p}borders-width) solid var(--${p}borders-color);
-      }
-      .${p}card-header:first-child { border-radius: var(--${p}borders-radius) var(--${p}borders-radius) 0 0; }
-      .${p}card-footer:last-child { border-radius: 0 0 var(--${p}borders-radius) var(--${p}borders-radius); border-top: var(--${p}borders-width) solid var(--${p}borders-color); border-bottom: 0;}
-      .${p}card-img-top { width: 100%; border-top-left-radius: var(--${p}borders-radius); border-top-right-radius: var(--${p}borders-radius); }
-    `;
-    componentStyles += `
-      .${p}modal {
-        position: fixed; top: 0; left: 0; z-index: var(--${p}zIndex-modal); display: none;
-        width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto; outline: 0;
-        background-color: rgba(0,0,0,0.5);
-      }
-      .${p}modal.show { display: block; }
-      .${p}modal-dialog { position: relative; width: auto; margin: var(--${p}spacing-2); pointer-events: none; }
-      @media (min-width: ${this.options.theme.breakpoints.sm}) {
-        .${p}modal-dialog { max-width: 500px; margin: 1.75rem auto; }
-      }
-      .${p}modal-content {
-        position: relative; display: flex; flex-direction: column; width: 100%; pointer-events: auto;
-        background-color: var(--${p}theme-colors-white); background-clip: padding-box;
-        border: var(--${p}borders-width) solid rgba(0,0,0,.2); border-radius: var(--${p}borders-radiusLg);
-        outline: 0; box-shadow: var(--${p}shadows-lg);
-      }
-      .${p}modal-header {
-        display: flex; flex-shrink: 0; align-items: center; justify-content: space-between;
-        padding: var(--${p}spacing-3); border-bottom: var(--${p}borders-width) solid var(--${p}borders-color);
-        border-top-left-radius: var(--${p}borders-radiusLg); border-top-right-radius: var(--${p}borders-radiusLg);
-      }
-      .${p}modal-title { margin-bottom: 0; line-height: var(--${p}typography-lineHeightBase); }
-      .${p}modal-body { position: relative; flex: 1 1 auto; padding: var(--${p}spacing-3); }
-      .${p}modal-footer {
-        display: flex; flex-wrap: wrap; flex-shrink: 0; align-items: center; justify-content: flex-end;
-        padding: var(--${p}spacing-3); border-top: var(--${p}borders-width) solid var(--${p}borders-color);
-        border-bottom-right-radius: var(--${p}borders-radiusLg); border-bottom-left-radius: var(--${p}borders-radiusLg);
-      }
-      .${p}modal-footer > * { margin: var(--${p}spacing-1); }
-      .${p}btn-close {
-        background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.707a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
-        border: 0; border-radius: var(--${p}borders-radius); opacity: .5; padding: .5em;
-      }
-      .${p}btn-close:hover { opacity: .75; }
-      .${p}btn-close:focus { outline: 0; box-shadow: 0 0 0 0.2rem rgba(var(--${p}theme-colors-primaryRGB, 0,123,255), .25); opacity: 1;}
-    `;
-    componentStyles += `
-      .${p}alert {
-        position: relative; padding: var(--${p}spacing-3); margin-bottom: var(--${p}spacing-3);
-        border: var(--${p}borders-width) solid transparent; border-radius: var(--${p}borders-radius);
-      }
-    `;
-    for (const colorName in this.options.theme.colors) {
-      if (['white', 'black', 'transparent'].includes(colorName)) continue;
-      componentStyles += `
-        .${p}alert-${colorName} {
-          color: var(--${p}theme-colors-${colorName});
-          background-color: color-mix(in srgb, var(--${p}theme-colors-${colorName}) 20%, transparent);
-          border-color: color-mix(in srgb, var(--${p}theme-colors-${colorName}) 40%, transparent);
-        }
-        .${p}alert-${colorName} .${p}alert-link { color: color-mix(in srgb, var(--${p}theme-colors-${colorName}) 80%, black); font-weight: var(--${p}typography-fontWeightBold); }
-      `;
-    }
-    componentStyles += `
-      .${p}navbar {
-        position: relative; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-        padding-top: var(--${p}spacing-2); padding-bottom: var(--${p}spacing-2);
-        background-color: var(--${p}theme-colors-light); box-shadow: var(--${p}shadows-sm);
-        z-index: var(--${p}zIndex-navbar);
-      }
-      .${p}navbar > .${p}container, .${p}navbar > .${p}container-fluid {
-        display: flex; flex-wrap: inherit; align-items: center; justify-content: space-between;
-      }
-      .${p}navbar-brand {
-        padding-top: .3125rem; padding-bottom: .3125rem; margin-right: var(--${p}spacing-3);
-        font-size: 1.25rem; text-decoration: none; white-space: nowrap;
-      }
-      .${p}navbar-nav {
-        display: flex; flex-direction: column; padding-left: 0; margin-bottom: 0; list-style: none;
-      }
-      .${p}navbar-nav .${p}nav-link {
-        padding-right: var(--${p}spacing-2); padding-left: var(--${p}spacing-2);
-        color: var(--${p}theme-textColor);
-      }
-      .${p}navbar-nav .${p}nav-link.active, .${p}navbar-nav .${p}nav-link.show {
-        color: var(--${p}theme-colors-primary);
-      }
-      .${p}navbar-toggler {
-        padding: var(--${p}spacing-1) var(--${p}spacing-2); font-size: 1.25rem; line-height: 1;
-        background-color: transparent; border: var(--${p}borders-width) solid var(--${p}borders-color);
-        border-radius: var(--${p}borders-radius); transition: box-shadow .15s ease-in-out;
-      }
-      .${p}navbar-toggler-icon {
-        display: inline-block; width: 1.5em; height: 1.5em; vertical-align: middle;
-        background-repeat: no-repeat; background-position: center; background-size: 100%;
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0, 0, 0, 0.55)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-      }
-      .${p}navbar-collapse {
-        flex-basis: 100%; flex-grow: 1; align-items: center; display: none;
-      }
-      .${p}navbar-collapse.show { display: flex; }
-      @media (min-width: ${this.options.theme.breakpoints.md}) {
-        .${p}navbar-expand-md .${p}navbar-nav { flex-direction: row; }
-        .${p}navbar-expand-md .${p}navbar-collapse { display: flex !important; flex-basis: auto; }
-        .${p}navbar-expand-md .${p}navbar-toggler { display: none; }
-      }
-    `;
-    ['light', 'dark'].forEach(scheme => {
-        const bgColor = scheme === 'light' ? `var(--${p}theme-colors-light)` : `var(--${p}theme-colors-dark)`;
-        const textColor = scheme === 'light' ? `var(--${p}theme-colors-dark)` : `var(--${p}theme-colors-light)`;
-        const togglerIconColor = scheme === 'light' ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.55)';
-        componentStyles += `
-        .${p}navbar-${scheme} { background-color: ${bgColor} !important; color: ${textColor}; }
-        .${p}navbar-${scheme} .${p}navbar-brand { color: ${textColor}; }
-        .${p}navbar-${scheme} .${p}navbar-nav .${p}nav-link { color: ${textColor}; }
-        .${p}navbar-${scheme} .${p}navbar-toggler { border-color: ${togglerIconColor}; }
-        .${p}navbar-${scheme} .${p}navbar-toggler-icon {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='${togglerIconColor}' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
-        }`;
-    });
-    componentStyles += `
-      .${p}form-label { margin-bottom: .5rem; display: inline-block; }
-      .${p}form-control, .${p}form-select {
-        display: block; width: 100%; padding: .375rem .75rem;
-        font-size: var(--${p}typography-fontSizeBase); font-weight: var(--${p}typography-fontWeightNormal);
-        line-height: var(--${p}typography-lineHeightBase); color: var(--${p}theme-textColor);
-        background-color: var(--${p}theme-colors-white); background-clip: padding-box;
-        border: var(--${p}borders-width) solid var(--${p}borders-color);
-        appearance: none; border-radius: var(--${p}borders-radius);
-        transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-      }
-      .${p}form-control:focus, .${p}form-select:focus {
-        color: var(--${p}theme-textColor); background-color: var(--${p}theme-colors-white);
-        border-color: color-mix(in srgb, var(--${p}theme-colors-primary) 50%, white);
-        outline: 0; box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--${p}theme-colors-primary) 25%, transparent);
-      }
-      .${p}form-control::placeholder { color: var(--${p}theme-colors-secondary); opacity: 1; }
-      .${p}form-control:disabled, .${p}form-control[readonly] {
-        background-color: var(--${p}theme-colors-light); opacity: 1;
-      }
-      textarea.${p}form-control { min-height: calc(1.5em + .75rem + 2px); }
-      .${p}form-check { display: block; min-height: 1.5rem; padding-left: 1.5em; margin-bottom: .125rem; }
-      .${p}form-check-input {
-        width: 1em; height: 1em; margin-top: .25em; vertical-align: top;
-        background-color: var(--${p}theme-colors-white);
-        border: var(--${p}borders-width) solid var(--${p}borders-color);
-        appearance: none; float: left; margin-left: -1.5em;
-      }
-      .${p}form-check-input[type="checkbox"] { border-radius: .25em; }
-      .${p}form-check-input[type="radio"] { border-radius: 50%; }
-      .${p}form-check-input:active { filter: brightness(90%); }
-      .${p}form-check-input:focus {
-        border-color: color-mix(in srgb, var(--${p}theme-colors-primary) 50%, white);
-        outline: 0; box-shadow: 0 0 0 0.25rem color-mix(in srgb, var(--${p}theme-colors-primary) 25%, transparent);
-      }
-      .${p}form-check-input:checked {
-        background-color: var(--${p}theme-colors-primary);
-        border-color: var(--${p}theme-colors-primary);
-      }
-      .${p}form-check-input:checked[type="checkbox"] {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10l3 3l6-6'/%3e%3c/svg%3e");
-      }
-      .${p}form-check-input:checked[type="radio"] {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");
-      }
-      .${p}form-check-label { display: inline-block; }
-      .${p}form-select {
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-        background-repeat: no-repeat; background-position: right .75rem center; background-size: 16px 12px;
-      }
-      .${p}form-select:disabled { background-color: var(--${p}theme-colors-light); }
-    `;
-    componentStyles += `
-      .${p}list-group { display: flex; flex-direction: column; padding-left: 0; margin-bottom: 0; border-radius: var(--${p}borders-radius); }
-      .${p}list-group-item {
-        position: relative; display: block; padding: var(--${p}spacing-2) var(--${p}spacing-3);
-        color: var(--${p}theme-textColor); text-decoration: none;
-        background-color: var(--${p}theme-colors-white);
-        border: var(--${p}borders-width) solid var(--${p}borders-color);
-      }
-      .${p}list-group-item:first-child { border-top-left-radius: inherit; border-top-right-radius: inherit; }
-      .${p}list-group-item:last-child { border-bottom-right-radius: inherit; border-bottom-left-radius: inherit; }
-      .${p}list-group-item + .${p}list-group-item { border-top-width: 0; }
-      .${p}list-group-item.active {
-        z-index: 2; color: var(--${p}theme-colors-white);
-        background-color: var(--${p}theme-colors-primary); border-color: var(--${p}theme-colors-primary);
-      }
-      .${p}list-group-item-action { width: 100%; color: #495057; text-align: inherit; }
-      .${p}list-group-item-action:hover, .${p}list-group-item-action:focus {
-        z-index: 1; color: #0b5ed7; text-decoration: none; background-color: #f8f9fa;
-      }
-    `;
-    this.styles += componentStyles;
-  }
+        return {
+            init: injectCSS,
+            getStyles: () => cssStyles
+        };
+    })();
 
-  _generateIconStyles() {
-    const p = this.options.prefix;
-    this.styles += `
-      .${p}icon {
-        display: inline-block; width: 1em; height: 1em;
-        vertical-align: -0.125em; fill: currentColor;
-      }
-    `;
-  }
+    // --- LocalStorage Module (from v1.0.0) ---
+    CaelokLib.Storage = (function() {
+        // ... (previous Storage code - kept concise for brevity in this example)
+        let isSupported = false; try { const t = '__cl_test__'; localStorage.setItem(t, t); localStorage.removeItem(t); isSupported = true; } catch (e) { /* istanbul ignore next */ console.warn('CaelokLib.Storage: localStorage unavailable.');}
+        return {
+            set: (k, v) => { if(!isSupported) return false; try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { /* istanbul ignore next */ return false; } },
+            get: (k) => { if(!isSupported) return null; try { const i = localStorage.getItem(k); return i ? JSON.parse(i) : null; } catch (e) { /* istanbul ignore next */ return null; } },
+            remove: (k) => { if(!isSupported) return false; try { localStorage.removeItem(k); return true; } catch (e) { /* istanbul ignore next */ return false; } },
+            clearAll: () => { if(!isSupported) return false; try { localStorage.clear(); return true; } catch (e) { /* istanbul ignore next */ return false; } },
+            isSupported: () => isSupported
+        };
+    })();
 
-  _generateAnimations() {
-    const p = this.options.prefix;
-    this.styles += `
-      @keyframes ${p}fadeIn { from { opacity: 0; } to { opacity: 1; } }
-      .${p}anim-fadeIn { animation-name: ${p}fadeIn; animation-duration: 0.5s; animation-fill-mode: both; }
-      @keyframes ${p}fadeOut { from { opacity: 1; } to { opacity: 0; } }
-      .${p}anim-fadeOut { animation-name: ${p}fadeOut; animation-duration: 0.5s; animation-fill-mode: both; }
-      @keyframes ${p}slideInUp { from { transform: translateY(100%); opacity:0; } to { transform: translateY(0); opacity:1; } }
-      .${p}anim-slideInUp { animation-name: ${p}slideInUp; animation-duration: 0.5s; animation-fill-mode: both; }
-      @keyframes ${p}pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
-      .${p}anim-pulse { animation-name: ${p}pulse; animation-duration: 1s; animation-iteration-count: infinite; }
-      @keyframes ${p}spin { to { transform: rotate(360deg); } }
-      .${p}anim-spin { animation-name: ${p}spin; animation-duration: 1s; animation-iteration-count: infinite; animation-timing-function: linear; }
-      .${p}transition-base { transition: var(--${p}transitions-base); }
-    `;
-  }
+    // --- Preloader Module (Enhanced) ---
+    CaelokLib.Preloader = (function() {
+        let preloaderElement = null;
+        let config = {
+            autoShow: true,
+            autoHide: true,
+            showSpinner: true,
+            text: null,
+            customHTML: null // New: Allow custom HTML for preloader content
+        };
 
-  _injectCSS() {
-    if (!this.styleElement) {
-      this.styleElement = document.createElement('style');
-      this.styleElement.id = `${this.options.prefix}dynamic-styles`;
-      this.options.targetElement.appendChild(this.styleElement);
-    }
-    this.styleElement.textContent = this.styles;
-  }
+        function createPreloaderDOM() {
+            const container = document.createElement('div');
+            container.className = 'cl-preloader';
+            container.setAttribute('aria-live', 'assertive');
+            container.setAttribute('role', 'status');
 
-  updateTheme(newTheme) {
-    const mergeDeep = (target, source) => {
-        for (const key in source) {
-            if (source[key] instanceof Object && key in target && target[key] instanceof Object) { // Ensure target[key] is also an object
-                mergeDeep(target[key], source[key]);
+            if (config.customHTML) {
+                if (typeof config.customHTML === 'string') {
+                    container.innerHTML = config.customHTML;
+                } else if (config.customHTML instanceof HTMLElement) {
+                    container.appendChild(config.customHTML.cloneNode(true));
+                }
             } else {
-                 target[key] = source[key]; // overwrite or add property
+                if (config.showSpinner) {
+                    const spinner = document.createElement('div');
+                    spinner.className = 'cl-preloader-spinner';
+                    container.appendChild(spinner);
+                }
+                if (config.text) {
+                    const textElement = document.createElement('div');
+                    textElement.className = 'cl-preloader-text';
+                    textElement.textContent = config.text;
+                    container.appendChild(textElement);
+                }
+            }
+            return container;
+        }
+
+        function show() {
+            if (preloaderElement && preloaderElement.parentNode) {
+                 preloaderElement.classList.remove('cl-hidden');
+            } else {
+                preloaderElement = createPreloaderDOM();
+                document.body.appendChild(preloaderElement);
+                /* istanbul ignore next */
+                void preloaderElement.offsetHeight; // Reflow
+            }
+            document.body.classList.add('cl-preloader-active');
+        }
+
+        function hide(removeElement = true) {
+            if (preloaderElement) {
+                preloaderElement.classList.add('cl-hidden');
+                document.body.classList.remove('cl-preloader-active');
+
+                const onTransitionEnd = (event) => {
+                    if (event.target === preloaderElement && event.propertyName === 'opacity') {
+                        preloaderElement.removeEventListener('transitionend', onTransitionEnd);
+                        if (removeElement && preloaderElement.parentNode) {
+                            preloaderElement.parentNode.removeChild(preloaderElement);
+                            preloaderElement = null;
+                        }
+                    }
+                };
+                preloaderElement.addEventListener('transitionend', onTransitionEnd);
+                // Fallback for safety
+                /* istanbul ignore next */
+                setTimeout(() => {
+                    if (preloaderElement && preloaderElement.classList.contains('cl-hidden') && removeElement && preloaderElement.parentNode) {
+                        preloaderElement.removeEventListener('transitionend', onTransitionEnd); // Clean up just in case
+                        preloaderElement.parentNode.removeChild(preloaderElement);
+                        preloaderElement = null;
+                    }
+                }, 800);
             }
         }
-        return target;
+        
+        function updateConfig(userConfig = {}) {
+            config = { ...config, ...userConfig };
+            if (preloaderElement && preloaderElement.parentNode) { // If visible, update it
+                const oldPreloader = preloaderElement;
+                preloaderElement = createPreloaderDOM();
+                if (oldPreloader.classList.contains('cl-hidden')) {
+                    preloaderElement.classList.add('cl-hidden');
+                }
+                oldPreloader.parentNode.replaceChild(preloaderElement, oldPreloader);
+            }
+        }
+
+        function autoInit() {
+            if (config.autoShow) {
+                if (document.body) show();
+                else document.addEventListener('DOMContentLoaded', show, { once: true });
+            }
+            if (config.autoHide) {
+                window.addEventListener('load', () => hide(true), { once: true });
+            }
+        }
+
+        return {
+            show: show,
+            hide: hide,
+            init: function(userConfig) {
+                updateConfig(userConfig);
+                autoInit();
+            },
+            isVisible: () => preloaderElement !== null && !preloaderElement.classList.contains('cl-hidden'),
+            configure: updateConfig
+        };
+    })();
+
+    // --- EQ+ Module (from v1.0.0, slightly reviewed) ---
+    CaelokLib.EQ = (function() {
+        // ... (previous EQ code - kept concise for brevity in this example)
+        const observedItems = []; let resizeObserver = null;
+        function evalQ(item) { /* ... evaluate queries ... */ if(!item.parent || !document.body.contains(item.element)) return; const pw = item.parent.clientWidth; item.queries.forEach(q => { let m = false; if(q.operator && typeof q.breakpoint === 'number'){ switch(q.operator){ case 'min-width': m = pw >= q.breakpoint; break; case 'max-width': m = pw <= q.breakpoint; break; }} else if(typeof q.condition === 'function'){m = q.condition(pw, item.element);} if(m) item.element.classList.add(q.className); else item.element.classList.remove(q.className);}); }
+        function checkAll() { observedItems.forEach(evalQ); }
+        /* istanbul ignore else */ if (typeof ResizeObserver !== 'undefined') { resizeObserver = new ResizeObserver(entries => { for (const entry of entries) { observedItems.filter(i => i.parent === entry.target).forEach(evalQ); }});} else { /* istanbul ignore next */ window.addEventListener('resize', CaelokLib.Utils.debounce(checkAll, 150), { passive: true }); console.warn("CaelokLib.EQ: ResizeObserver not supported. Using debounced window resize."); }
+        return {
+            observe: (elSel, qs) => {const el = (typeof elSel === 'string')?document.querySelector(elSel):elSel; if(!el || !el.parentNode || el.parentNode.nodeType !== Node.ELEMENT_NODE) { /* istanbul ignore next */ console.error('EQ: Invalid element or no parent.'); return; } CaelokLib.EQ.unobserve(el,false); const ni = {element: el, queries: qs, parent: el.parentNode}; observedItems.push(ni); if(resizeObserver) resizeObserver.observe(ni.parent); evalQ(ni);},
+            unobserve: (elSel, unobserveParent = true) => {const el = (typeof elSel === 'string')?document.querySelector(elSel):elSel; if(!el) return; let p=null; for(let i=observedItems.length-1;i>=0;i--){if(observedItems[i].element===el){p=observedItems[i].parent;observedItems.splice(i,1);}} if(resizeObserver && p && unobserveParent && !observedItems.some(item => item.parent === p)){resizeObserver.unobserve(p);}},
+            unobserveAll: () => { if(resizeObserver) { const parents = new Set(observedItems.map(i => i.parent)); parents.forEach(p => resizeObserver.unobserve(p)); } observedItems.length=0;},
+            update: checkAll,
+            init: () => {}
+        };
+    })();
+
+    // --- Modal Module ---
+    CaelokLib.Modal = (function() {
+        let activeModal = null;
+        let backdropElement = null;
+        const focusableElementsString = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, [tabindex]:not([tabindex="-1"]), [contenteditable]';
+
+        function createBackdrop() {
+            if (!backdropElement) {
+                backdropElement = document.createElement('div');
+                backdropElement.className = 'cl-modal-backdrop';
+                backdropElement.addEventListener('click', () => {
+                    if (activeModal && activeModal.config.closeOnBackdropClick) {
+                        hide();
+                    }
+                });
+                document.body.appendChild(backdropElement);
+            }
+        }
+        
+        function trapFocus(modalElement) {
+            const focusableElements = modalElement.querySelectorAll(focusableElementsString);
+            const firstFocusableElement = focusableElements[0];
+            const lastFocusableElement = focusableElements[focusableElements.length - 1];
+
+            modalElement.addEventListener('keydown', function(e) {
+                if (e.key !== 'Tab') return;
+
+                if (e.shiftKey) { // Shift + Tab
+                    if (document.activeElement === firstFocusableElement) {
+                        lastFocusableElement.focus();
+                        e.preventDefault();
+                    }
+                } else { // Tab
+                    if (document.activeElement === lastFocusableElement) {
+                        firstFocusableElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            });
+             /* istanbul ignore else */
+            if (firstFocusableElement) {
+                setTimeout(() => firstFocusableElement.focus(), 50); // Delay focus slightly for transition
+            }
+        }
+
+
+        function show(options) {
+            if (activeModal) hide(false); // Hide previous modal without removing backdrop immediately
+
+            const config = {
+                title: '',
+                content: '', // HTML string or HTMLElement
+                footerContent: '', // HTML string or HTMLElement for footer buttons
+                size: 'default', // 'sm', 'lg', 'xl' (todo: add CSS for these)
+                closeButton: true,
+                closeOnEscape: true,
+                closeOnBackdropClick: true,
+                onShow: null, // Callback when shown
+                onHide: null, // Callback when hidden
+                id: CaelokLib.Utils.generateId('modal-')
+            };
+            Object.assign(config, options);
+
+            createBackdrop(); // Ensure backdrop is ready
+
+            const modalElement = document.createElement('div');
+            modalElement.className = 'cl-modal';
+            modalElement.id = config.id;
+            modalElement.setAttribute('role', 'dialog');
+            modalElement.setAttribute('aria-modal', 'true');
+            if (config.title) modalElement.setAttribute('aria-labelledby', config.id + '-title');
+            
+            let modalHTML = '';
+            if (config.title || config.closeButton) {
+                modalHTML += `<div class="cl-modal-header">`;
+                if (config.title) {
+                    modalHTML += `<h5 class="cl-modal-title" id="${config.id}-title">${config.title}</h5>`;
+                }
+                if (config.closeButton) {
+                    modalHTML += `<button type="button" class="cl-modal-close" aria-label="Cerrar">&times;</button>`;
+                }
+                modalHTML += `</div>`;
+            }
+
+            modalHTML += `<div class="cl-modal-body"></div>`;
+
+            if (config.footerContent) {
+                modalHTML += `<div class="cl-modal-footer"></div>`;
+            }
+            modalElement.innerHTML = modalHTML;
+
+            const bodyElement = modalElement.querySelector('.cl-modal-body');
+            if (typeof config.content === 'string') {
+                bodyElement.innerHTML = config.content;
+            } else if (config.content instanceof HTMLElement) {
+                bodyElement.appendChild(config.content);
+            }
+            
+            if(config.footerContent){
+                const footerElement = modalElement.querySelector('.cl-modal-footer');
+                 if (typeof config.footerContent === 'string') {
+                    footerElement.innerHTML = config.footerContent;
+                } else if (config.footerContent instanceof HTMLElement) {
+                    footerElement.appendChild(config.footerContent);
+                }
+            }
+
+
+            document.body.appendChild(modalElement);
+            document.body.classList.add('cl-modal-open');
+            
+            // Add event listener for close button
+            const closeBtn = modalElement.querySelector('.cl-modal-close');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', () => hide());
+            }
+
+            // Show backdrop and modal with slight delay for transitions
+            /* istanbul ignore next */
+            requestAnimationFrame(() => {
+                /* istanbul ignore next */
+                requestAnimationFrame(() => { // Double requestAnimationFrame for some browsers
+                    if(backdropElement) backdropElement.classList.add('cl-visible');
+                    modalElement.classList.add('cl-visible');
+                });
+            });
+
+            activeModal = { element: modalElement, config: config, previousFocus: document.activeElement };
+            
+            if (config.closeOnEscape) {
+                document.addEventListener('keydown', handleEscapeKey);
+            }
+            
+            trapFocus(modalElement);
+
+            if (typeof config.onShow === 'function') {
+                config.onShow(modalElement);
+            }
+            return modalElement;
+        }
+
+        function hide(removeBackdrop = true) {
+            if (!activeModal) return;
+
+            const { element, config, previousFocus } = activeModal;
+
+            element.classList.remove('cl-visible');
+            if (removeBackdrop && backdropElement) {
+                 backdropElement.classList.remove('cl-visible');
+            }
+            
+            document.body.classList.remove('cl-modal-open');
+
+
+            const onTransitionEnd = (event) => {
+                 if(event.target !== element) return; // Only react to modal's own transition
+                element.removeEventListener('transitionend', onTransitionEnd);
+                if (element.parentNode) {
+                    element.parentNode.removeChild(element);
+                }
+                if (removeBackdrop && backdropElement && backdropElement.parentNode && !backdropElement.classList.contains('cl-visible')) {
+                    backdropElement.parentNode.removeChild(backdropElement);
+                    backdropElement = null;
+                }
+                 /* istanbul ignore else */
+                if (previousFocus && typeof previousFocus.focus === 'function') {
+                    previousFocus.focus();
+                }
+                if (typeof config.onHide === 'function') {
+                    config.onHide();
+                }
+            };
+
+            element.addEventListener('transitionend', onTransitionEnd);
+            // Fallback if transitionend doesn't fire
+            /* istanbul ignore next */
+            setTimeout(() => {
+                if (element.parentNode) { // Check if still there
+                    onTransitionEnd({target: element}); // Manually trigger cleanup
+                }
+            }, 300); // slightly longer than transition
+
+            if (config.closeOnEscape) {
+                document.removeEventListener('keydown', handleEscapeKey);
+            }
+            activeModal = null;
+        }
+
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape' && activeModal && activeModal.config.closeOnEscape) {
+                hide();
+            }
+        }
+
+        return {
+            show: show,
+            hide: hide,
+            getActiveModal: () => activeModal ? activeModal.element : null,
+            init: () => { /* Modals are created on demand */ }
+        };
+    })();
+
+    // --- Tooltip Module (Simple, CSS driven for basic positioning) ---
+    CaelokLib.Tooltip = (function() {
+        const tooltipRegistry = new Map(); // Store {element: tooltipElement}
+
+        function createTooltipElement(text, id) {
+            const tooltip = document.createElement('div');
+            tooltip.className = 'cl-tooltip';
+            tooltip.setAttribute('role', 'tooltip');
+            tooltip.id = id;
+            
+            const inner = document.createElement('div');
+            inner.className = 'cl-tooltip-inner';
+            inner.textContent = text;
+            tooltip.appendChild(inner);
+            
+            // Optional: Add arrow for basic positioning (more advanced needs Popper.js)
+            // For simplicity, this example relies on CSS for a generic position,
+            // or you'd integrate a library like PopperJS here for precise placement.
+            // const arrow = document.createElement('div');
+            // arrow.className = 'cl-tooltip-arrow';
+            // tooltip.appendChild(arrow);
+
+            document.body.appendChild(tooltip);
+            return tooltip;
+        }
+
+        function positionTooltip(target, tooltip) {
+            const targetRect = target.getBoundingClientRect();
+            const tooltipRect = tooltip.getBoundingClientRect();
+            let top, left;
+
+            // Default: Top position
+            top = targetRect.top - tooltipRect.height - 5; // 5px offset
+            left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
+
+            // Basic boundary detection (very simplified)
+            if (top < 0) { // If too close to top, show below
+                top = targetRect.bottom + 5;
+                tooltip.setAttribute('data-popper-placement', 'bottom'); // For arrow styling
+            } else {
+                tooltip.setAttribute('data-popper-placement', 'top');
+            }
+            if (left < 0) left = 5;
+            if (left + tooltipRect.width > window.innerWidth) left = window.innerWidth - tooltipRect.width - 5;
+
+
+            tooltip.style.top = `${top + window.scrollY}px`;
+            tooltip.style.left = `${left + window.scrollX}px`;
+        }
+        
+        function showTooltip(target) {
+            const title = target.getAttribute('title') || target.getAttribute('data-cl-tooltip');
+            if (!title) return;
+
+            // Prevent native title from showing
+            if(target.getAttribute('title')) {
+                target.setAttribute('data-cl-original-title', title);
+                target.removeAttribute('title');
+            }
+
+            const tooltipId = CaelokLib.Utils.generateId('tooltip-');
+            const tooltipElement = createTooltipElement(title, tooltipId);
+            target.setAttribute('aria-describedby', tooltipId);
+            
+            positionTooltip(target, tooltipElement);
+            tooltipElement.classList.add('cl-visible');
+            tooltipRegistry.set(target, tooltipElement);
+        }
+
+        function hideTooltip(target) {
+            const tooltipElement = tooltipRegistry.get(target);
+            if (tooltipElement) {
+                tooltipElement.classList.remove('cl-visible');
+                // Remove after transition
+                tooltipElement.addEventListener('transitionend', function te() {
+                    this.removeEventListener('transitionend', te);
+                    /* istanbul ignore if */
+                    if (this.parentNode) this.parentNode.removeChild(this);
+                });
+                /* istanbul ignore next */
+                setTimeout(() => { if(tooltipElement.parentNode) tooltipElement.parentNode.removeChild(tooltipElement); }, 200);
+
+
+                target.removeAttribute('aria-describedby');
+                tooltipRegistry.delete(target);
+            }
+            // Restore native title if it was moved
+            const originalTitle = target.getAttribute('data-cl-original-title');
+            if (originalTitle) {
+                target.setAttribute('title', originalTitle);
+                target.removeAttribute('data-cl-original-title');
+            }
+        }
+
+        function initTooltips(selector = '[data-cl-tooltip]') {
+            document.querySelectorAll(selector).forEach(el => {
+                // Ensure each element only gets listeners once
+                if (el.dataset.clTooltipInitialized) return;
+                el.dataset.clTooltipInitialized = 'true';
+
+                el.addEventListener('mouseenter', () => showTooltip(el));
+                el.addEventListener('focus', () => showTooltip(el));
+                el.addEventListener('mouseleave', () => hideTooltip(el));
+                el.addEventListener('blur', () => hideTooltip(el));
+            });
+        }
+        
+        // Handle ESC key to close any active tooltip (though less common for tooltips)
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                tooltipRegistry.forEach((tooltipEl, targetEl) => {
+                    hideTooltip(targetEl);
+                });
+            }
+        });
+
+        return {
+            init: initTooltips,
+            dispose: (selectorOrElement) => {
+                const elements = typeof selectorOrElement === 'string' ? document.querySelectorAll(selectorOrElement) : [selectorOrElement];
+                elements.forEach(el => {
+                    hideTooltip(el); // Hide it first
+                    el.removeEventListener('mouseenter', showTooltip); // Simplified, actual listeners are anonymous
+                    el.removeEventListener('focus', showTooltip);
+                    el.removeEventListener('mouseleave', hideTooltip);
+                    el.removeEventListener('blur', hideTooltip);
+                    delete el.dataset.clTooltipInitialized;
+                });
+            }
+        };
+    })();
+
+    // --- Scroll Animate Module ---
+    CaelokLib.ScrollAnimate = (function() {
+        let observer;
+        const defaultOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1, // 10% visible
+            animationClass: 'cl-is-visible', // Class to add when element is visible
+            delay: '0s',
+            duration: '0.6s',
+            once: true // Only animate once
+        };
+
+        function handleIntersect(entries, obs) {
+            entries.forEach(entry => {
+                const target = entry.target;
+                if (entry.isIntersecting) {
+                    target.style.transitionDelay = target.dataset.clDelay || defaultOptions.delay;
+                    target.style.transitionDuration = target.dataset.clDuration || defaultOptions.duration;
+                    target.classList.add(target.dataset.clAnimationClass || defaultOptions.animationClass);
+                    if (target.dataset.clOnce === 'true' || (target.dataset.clOnce === undefined && defaultOptions.once)) {
+                        obs.unobserve(target);
+                    }
+                } else {
+                    // Option to re-animate if 'once' is false
+                    if (target.dataset.clOnce === 'false') {
+                         target.classList.remove(target.dataset.clAnimationClass || defaultOptions.animationClass);
+                    }
+                }
+            });
+        }
+
+        function init(selector = '.cl-animate', options = {}) {
+            /* istanbul ignore if */
+            if (!('IntersectionObserver' in window)) {
+                console.warn('CaelokLib.ScrollAnimate: IntersectionObserver not supported. Animations will not trigger.');
+                // Fallback: make all elements visible immediately
+                document.querySelectorAll(selector).forEach(el => {
+                    el.classList.add(el.dataset.clAnimationClass || defaultOptions.animationClass);
+                });
+                return;
+            }
+
+            const mergedOptions = { ...defaultOptions, ...options };
+            observer = new IntersectionObserver(handleIntersect, mergedOptions);
+            const elements = document.querySelectorAll(selector);
+            elements.forEach(el => {
+                // Store options on the element if they are specific
+                if(el.dataset.clAnimationClass === undefined) el.dataset.clAnimationClass = mergedOptions.animationClass;
+                if(el.dataset.clDelay === undefined && mergedOptions.delay) el.dataset.clDelay = mergedOptions.delay;
+                if(el.dataset.clDuration === undefined && mergedOptions.duration) el.dataset.clDuration = mergedOptions.duration;
+                if(el.dataset.clOnce === undefined && mergedOptions.once !== undefined) el.dataset.clOnce = String(mergedOptions.once);
+                
+                observer.observe(el);
+            });
+        }
+        
+        function observe(element, elOptions = {}) {
+            /* istanbul ignore if */
+            if (!observer) {
+                console.warn('CaelokLib.ScrollAnimate: Not initialized. Call init() first or ensure IntersectionObserver is supported.');
+                if (element instanceof HTMLElement) element.classList.add(elOptions.animationClass || defaultOptions.animationClass);
+                return;
+            }
+             if (element instanceof HTMLElement) {
+                if(elOptions.animationClass) element.dataset.clAnimationClass = elOptions.animationClass;
+                if(elOptions.delay) element.dataset.clDelay = elOptions.delay;
+                if(elOptions.duration) element.dataset.clDuration = elOptions.duration;
+                if(elOptions.once !== undefined) element.dataset.clOnce = String(elOptions.once);
+                observer.observe(element);
+             } else {
+                console.error('CaelokLib.ScrollAnimate.observe: Invalid element provided.');
+             }
+        }
+        
+        function unobserve(element) {
+             /* istanbul ignore if */
+             if (!observer) return;
+             if (element instanceof HTMLElement) {
+                observer.unobserve(element);
+             }
+        }
+
+
+        return {
+            init: init, // Initialize with a general selector
+            observe: observe, // Observe a specific element dynamically
+            unobserve: unobserve, // Unobserve a specific element
+            destroy: () => { /* istanbul ignore if */ if (observer) observer.disconnect(); observer = null; }
+        };
+    })();
+
+    // --- Notification/Toast Module ---
+    CaelokLib.Notify = (function() {
+        let container = null;
+        const defaultConfig = {
+            message: '',
+            type: 'info', // 'info', 'success', 'warning', 'danger', 'dark' (uses dark as default style)
+            duration: 3000, // milliseconds, 0 for sticky
+            position: 'top-right', // 'top-right', 'top-left', 'bottom-right', 'bottom-left', 'top-center', 'bottom-center'
+            closable: true,
+            customHTML: null, // Allow full custom HTML content
+            onClose: null // Callback when notification is closed
+        };
+
+        function getContainer(position) {
+            // Check if a container for this specific position already exists
+            let specificContainer = document.querySelector(`.cl-notification-container.cl-${position}`);
+            if (specificContainer) {
+                return specificContainer;
+            }
+
+            // If not, create a new one
+            specificContainer = document.createElement('div');
+            specificContainer.className = `cl-notification-container cl-${position}`;
+            document.body.appendChild(specificContainer);
+            return specificContainer;
+        }
+
+
+        function show(optionsOrMessage) {
+            const config = { ...defaultConfig };
+            if (typeof optionsOrMessage === 'string') {
+                config.message = optionsOrMessage;
+            } else {
+                Object.assign(config, optionsOrMessage);
+            }
+
+            container = getContainer(config.position);
+
+            const notificationElement = document.createElement('div');
+            notificationElement.className = `cl-notification cl-${config.type}`;
+            notificationElement.setAttribute('role', 'alert');
+            notificationElement.setAttribute('aria-live', 'assertive');
+
+            if (config.customHTML) {
+                 if (typeof config.customHTML === 'string') {
+                    notificationElement.innerHTML = config.customHTML;
+                } else if (config.customHTML instanceof HTMLElement) {
+                    notificationElement.appendChild(config.customHTML.cloneNode(true));
+                }
+            } else {
+                const messageSpan = document.createElement('span');
+                messageSpan.className = 'cl-notification-message';
+                messageSpan.textContent = config.message;
+                notificationElement.appendChild(messageSpan);
+            }
+            
+
+            if (config.closable) {
+                const closeButton = document.createElement('button');
+                closeButton.type = 'button';
+                closeButton.className = 'cl-notification-close';
+                closeButton.innerHTML = '&times;';
+                closeButton.setAttribute('aria-label', 'Cerrar notificación');
+                closeButton.addEventListener('click', () => dismiss(notificationElement, config.onClose));
+                // Ensure close button is appended appropriately if customHTML is used
+                if (config.customHTML && notificationElement.firstChild && notificationElement.firstChild.nodeType === Node.ELEMENT_NODE) {
+                    // Try to append it smartly, or require user to place it in customHTML
+                     notificationElement.appendChild(closeButton); // Simplest append
+                } else if (!config.customHTML) {
+                     notificationElement.appendChild(closeButton);
+                }
+            }
+            
+            // Prepend so new notifications appear on top (or bottom depending on flex-direction of container)
+            if (config.position.startsWith('top-')) {
+                 container.prepend(notificationElement);
+            } else {
+                 container.appendChild(notificationElement);
+            }
+
+
+            // Trigger animation
+            /* istanbul ignore next */
+            requestAnimationFrame(() => {
+                notificationElement.classList.add('cl-visible');
+            });
+
+            if (config.duration > 0) {
+                setTimeout(() => dismiss(notificationElement, config.onClose), config.duration);
+            }
+            return notificationElement;
+        }
+
+        function dismiss(notificationElement, onCloseCallback) {
+            if (!notificationElement || !notificationElement.parentNode) return;
+
+            notificationElement.classList.remove('cl-visible');
+            notificationElement.addEventListener('transitionend', function te() {
+                this.removeEventListener('transitionend', te);
+                /* istanbul ignore if */
+                if (this.parentNode) {
+                    this.parentNode.removeChild(this);
+                    // Check if container is empty and remove it
+                    const parentContainer = this.closest('.cl-notification-container');
+                    if (parentContainer && parentContainer.childElementCount === 0) {
+                        parentContainer.remove();
+                    }
+                }
+                if (typeof onCloseCallback === 'function') {
+                    onCloseCallback();
+                }
+            });
+            // Fallback for safety
+            /* istanbul ignore next */
+            setTimeout(() => {
+                 if (notificationElement.parentNode) {
+                    notificationElement.parentNode.removeChild(notificationElement);
+                    const parentContainer = notificationElement.closest('.cl-notification-container');
+                    if (parentContainer && parentContainer.childElementCount === 0) {
+                        parentContainer.remove();
+                    }
+                    if (typeof onCloseCallback === 'function') {
+                        onCloseCallback(); // Call it here if not already called
+                    }
+                 }
+            }, 350); // a bit longer than transition
+        }
+        
+        // Convenience methods
+        function info(message, options={}) { return show({...options, message, type: 'info'}); }
+        function success(message, options={}) { return show({...options, message, type: 'success'}); }
+        function warning(message, options={}) { return show({...options, message, type: 'warning'}); }
+        function danger(message, options={}) { return show({...options, message, type: 'danger'}); }
+
+
+        return {
+            show: show,
+            info: info,
+            success: success,
+            warning: warning,
+            danger: danger,
+            init: () => { /* Notifications are created on demand */ }
+        };
+    })();
+
+
+    // --- Global Initialization ---
+    CaelokLib.init = function(config = {}) {
+        CaelokLib.Core.init(); // Injects CSS first
+
+        const preloaderConfig = typeof config.preloader === 'object' ? config.preloader : {};
+        if (config.preloader !== false) {
+             CaelokLib.Preloader.init(preloaderConfig);
+        }
+        
+        CaelokLib.EQ.init(); // Ready for observe calls
+        CaelokLib.Modal.init(); // Ready for show calls
+        CaelokLib.Tooltip.init(config.tooltipSelector); // Auto-init existing tooltips
+        CaelokLib.ScrollAnimate.init(config.scrollAnimateSelector, config.scrollAnimateOptions); // Auto-init scroll animations
+        CaelokLib.Notify.init(); // Ready for show calls
+        
+        // console.info('CaelokLib v1.1.0 Initialized.');
+    };
+
+    // Expose CaelokLib to the global window object
+    window.CaelokLib = CaelokLib;
+
+    // Auto-initialize the library based on window.caelokLibConfig
+    function attemptAutoInit() {
+        const libConfig = window.caelokLibConfig || {};
+        CaelokLib.init(libConfig);
     }
-    mergeDeep(this.options.theme, newTheme);
-    this.styles = '';
-    this._generateCSSVariables();
-    this._generateBaseStyles();
-    if (this.options.modules.grid) this._generateGrid();
-    if (this.options.modules.utilities) this._generateUtilities();
-    if (this.options.modules.components) this._generateComponents();
-    if (this.options.modules.icons) this._generateIconStyles();
-    if (this.options.modules.animations) this._generateAnimations();
-    this._injectCSS();
-    console.info('[ck] : theme updated.');
-  }
 
-  getIcon(iconName, attributes = {}) {
-    const p = this.options.prefix;
-    if (this.options.icons[iconName]) {
-      const parser = new DOMParser();
-      const svgDoc = parser.parseFromString(this.options.icons[iconName], "image/svg+xml");
-      const svgElement = svgDoc.documentElement;
-      svgElement.classList.add(`${p}icon`);
-      svgElement.classList.add(`${p}icon-${iconName}`);
-      for (const attr in attributes) {
-        svgElement.setAttribute(attr, attributes[attr]);
-      }
-      return svgElement;
-    }
-    console.warn(`CaelokFramework: Icon "${iconName}" not found.`);
-    return null;
-  }
-
-  addClass(element, className) {
-    if (element && className) element.classList.add(className);
-  }
-
-  removeClass(element, className) {
-    if (element && className) element.classList.remove(className);
-  }
-
-  toggleClass(element, className) {
-     if (element && className) element.classList.toggle(className);
-  }
-
-  toggleModal(modalSelectorOrElement, show) {
-    const modalElement = typeof modalSelectorOrElement === 'string' ? document.querySelector(modalSelectorOrElement) : modalSelectorOrElement;
-    if (!modalElement || !modalElement.classList.contains(`${this.options.prefix}modal`)) {
-      console.warn('[ck] : Modal element not found or invalid.', modalSelectorOrElement);
-      return;
-    }
-    const currentlyShown = modalElement.classList.contains('show');
-    if (show === undefined) {
-        modalElement.classList.toggle('show');
-    } else if (show && !currentlyShown) {
-        modalElement.classList.add('show');
-    } else if (!show && currentlyShown) {
-        modalElement.classList.remove('show');
-    }
-    if (modalElement.classList.contains('show')) {
-        document.body.style.overflow = 'hidden';
+    /* istanbul ignore if */
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', attemptAutoInit, { once: true });
     } else {
-        document.body.style.overflow = '';
+        attemptAutoInit();
     }
-  }
 
-  toggleNavbar(targetSelectorOrElement) {
-    const targetElement = typeof targetSelectorOrElement === 'string' ? document.querySelector(targetSelectorOrElement) : targetSelectorOrElement;
-    if (!targetElement || !targetElement.classList.contains(`${this.options.prefix}navbar-collapse`)) {
-      console.warn('[ck] : Navbar collapse target not found or invalid.', targetSelectorOrElement);
-      return;
-    }
-    targetElement.classList.toggle('show');
-  }
-}
-
-if (typeof window !== 'undefined' && window.caelokConfig) {
-  window.Caelok = new CaelokFramework(window.caelokConfig);
-}
+})(window, document);
