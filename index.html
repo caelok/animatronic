@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caelok UI - Modern JavaScript CSS Framework</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&family=Roboto:wght@400;500&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+    <script src="main.js"></script>
+    
+    <style>
+        :root {
+
+            --font-family-sans-serif: 'Roboto', sans-serif;
+            --font-family-headings: 'Poppins', sans-serif;
+            --font-family-monospace: 'Source Code Pro', monospace;
+        }
+
+        body {
+            font-family: var(--font-family-sans-serif);
+            transition: background-color 0.5s ease, color 0.5s ease;
+            line-height: 1.7; /* Slightly more spacious line height */
+        }
+
+  
+        .ck-theme-typography-fontFamilyBase {
+            font-family: var(--font-family-sans-serif) !important;
+        }
+
+        h1, h2, h3, h4, h5, h6, .ck-navbar-brand, .ck-card-title, .ck-modal-title {
+            font-family: var(--font-family-headings);
+        }
+        .ck-display-1, .ck-display-2, .ck-display-3, .ck-display-4 {
+             font-family: var(--font-family-headings);
+        }
+
+        .ck-container {
+            padding-top: 3rem;
+            padding-bottom: 3rem;
+        }
+
+        .hero {
+            padding: 5rem 1.5rem;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--ck-theme-colors-primary, #007bff) 0%, color-mix(in srgb, var(--ck-theme-colors-primary, #007bff) 70%, var(--ck-theme-colors-info, #17a2b8)) 100%);
+            color: var(--ck-theme-colors-white, #fff);
+            border-radius: var(--ck-borders-radiusLg, 0.3rem);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero h1 {
+            color: var(--ck-theme-colors-white, #fff);
+            font-weight: 700;
+            font-size: 3.5rem; 
+        }
+        .hero .ck-lead {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.25rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero .ck-btn-lg {
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
+        }
+    
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.07'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414zM41.95 17.536l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414zM0 21.213l8.486-8.486 1.414 1.414L1.414 22.627 0 21.213zM15.536 9.464l8.486-8.486 1.414 1.414-8.486 8.486-1.414-1.414z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        .hero > .ck-container { /* Ensure content is above pattern */
+            position: relative;
+            z-index: 1;
+        }
+
+
+        .section {
+            margin-bottom: 4rem; /* Increased spacing */
+            padding-top: 3rem;  /* Increased spacing */
+            border-top: 1px solid var(--ck-borders-color, #dee2e6);
+        }
+        .section:first-of-type {
+            border-top: none;
+            padding-top: 0;
+        }
+        .section h2 {
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            display: flex; /* For icon alignment */
+            align-items: center; /* For icon alignment */
+        }
+        .section h2 .ck-icon {
+            font-size: 1.5em;
+            margin-right: 0.75rem;
+            color: var(--ck-theme-colors-primary, #007bff); /
+        }
+
+
+        .component-example {
+            border: 1px solid var(--ck-borders-color, #dee2e6);
+            padding: 2rem; 
+            border-radius: var(--ck-borders-radius, 0.25rem);
+            margin-top: 1.5rem;
+            margin-bottom: 1.5rem;
+            background-color: var(--ck-theme-colors-white, #fff); 
+            box-shadow: var(--ck-shadows-sm, 0 .125rem .25rem rgba(0,0,0,.075));
+        }
+        .component-example h5 {
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .code-snippet {
+            background-color: #282c34; /* Atom One Dark like */
+            color: #abb2bf; /* Light gray text */
+            padding: 1.5rem;
+            border-radius: var(--ck-borders-radiusSm, 0.2rem);
+            margin-top: 1rem;
+            overflow-x: auto;
+            font-family: var(--font-family-monospace);
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .code-snippet pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        /* Basic syntax highlighting for demo - very rudimentary */
+        .code-snippet .html-tag { color: #e06c75; } /* Reddish for tags */
+        .code-snippet .html-attr-name { color: #d19a66; } /* Orangey for attribute names */
+        .code-snippet .html-attr-value { color: #98c379; } /* Greenish for attribute values */
+        .code-snippet .js-keyword { color: #c678dd; } /* Purplish for JS keywords */
+        .code-snippet .js-string { color: #98c379; } /* Greenish for JS strings */
+        .code-snippet .comment { color: #5c6370; font-style: italic; } /* Gray for comments */
+
+
+        .color-palette div {
+            padding: 1.5rem;
+            border-radius: var(--ck-borders-radiusSm, 0.2rem);
+            text-align: center;
+            color: var(--ck-theme-colors-white, #fff);
+            margin-bottom: 0.75rem;
+            font-family: var(--font-family-monospace);
+            font-size: 0.9rem;
+            box-shadow: var(--ck-shadows-sm, 0 .125rem .25rem rgba(0,0,0,.075));
+        }
+        .color-palette .ck-bg-light, .color-palette .ck-bg-white, .color-palette .ck-bg-warning /* Warning often needs dark text */ {
+            color: var(--ck-theme-colors-dark, #212529);
+        }
+        .icon-gallery {
+            display: grid; /* Use grid for better alignment */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Responsive columns */
+            gap: 1.5rem;
+        }
+        .icon-gallery .icon-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            border: 1px solid var(--ck-borders-color, #dee2e6);
+            border-radius: var(--ck-borders-radius, 0.25rem);
+            text-align: center;
+            background-color: var(--ck-theme-colors-white, #fff);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        }
+        .icon-gallery .icon-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--ck-shadows-md, 0 .5rem 1rem rgba(0,0,0,.15));
+        }
+        .icon-gallery .ck-icon {
+            font-size: 2.5rem; /* Larger icons for gallery */
+            margin-bottom: 0.75rem;
+            color: var(--ck-theme-colors-primary, #007bff);
+        }
+        .icon-gallery .icon-name {
+            font-size: 0.8rem;
+            color: var(--ck-theme-colors-secondary, #6c757d);
+            font-family: var(--font-family-monospace);
+        }
+
+        .theme-switcher {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1100; 
+        }
+        .theme-switcher .ck-form-select {
+            min-width: 180px; /* Wider select for better readability */
+        }
+
+        .ck-fade-in-section {
+            opacity: 0;
+            transform: translateY(30px); /* Slightly more pronounced effect */
+            transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+        }
+        .ck-fade-in-section.ck-is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Sticky Navbar styling */
+        .ck-navbar.ck-sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: var(--ck-zIndex-navbar, 1030);
+        }
+
+        /* Enhanced button hover from Caelok (can be added to Caelok too) */
+        .ck-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--ck-shadows-sm, 0 .125rem .25rem rgba(0,0,0,.075));
+        }
+        .ck-btn:active {
+            transform: translateY(0px);
+        }
+
+        /* Link hover effect in nav */
+        .ck-nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .ck-nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--ck-theme-colors-primary, #007bff);
+            transition: width 0.3s ease;
+        }
+        .ck-nav-link:hover::after,
+        .ck-nav-link.active::after {
+            width: 70%; /* Underline effect */
+        }
+        .ck-nav-link:hover {
+            color: var(--ck-theme-colors-primary, #007bff);
+            text-decoration: none; 
+        }
+
+
+    </style>
+</head>
+<body class="ck-bg-bodyBg ck-text-textColor">
+
+    <div class="theme-switcher ck-p-2 ck-bg-white ck-shadow-md ck-rounded">
+        <select id="themeSelector" class="ck-form-select ck-form-select-sm" aria-label="Theme selector">
+            <option value="default">Default Theme</option>
+            <option value="dark">Dark Theme</option>
+            <option value="corporate">Corporate Theme</option>
+        </select>
+    </div>
+
+    <nav id="mainNav" class="ck-navbar ck-navbar-expand-md ck-navbar-light ck-bg-light ck-sticky-top ck-shadow-sm">
+        <div class="ck-container">
+            <a class="ck-navbar-brand ck-d-flex ck-align-items-center" href="#">
+                <span id="navBrandIconContainer" class="ck-me-2"></span> <!-- Icon will be injected here -->
+                Caelok<span class="ck-text-primary">UI</span>
+            </a>
+            <button id="navbarToggler" class="ck-navbar-toggler" type="button" aria-controls="navbarNavContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="ck-navbar-toggler-icon"></span>
+            </button>
+            <div class="ck-navbar-collapse" id="navbarNavContent">
+                <ul class="ck-navbar-nav ck-ms-auto">
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#getting-started">Getting Started</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#layout">Layout</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#utilities">Utilities</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#components">Components</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#icons">Icons</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#animations">Animations</a></li>
+                    <li class="ck-nav-item"><a class="ck-nav-link" href="#customization">Customization</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero ck-anim-fadeIn">
+        <div class="ck-container">
+            <h1 class="ck-display-3 ck-fw-bold">Caelok UI Framework</h1>
+            <p class="ck-lead ck-my-4">A modern, lightweight, and customizable CSS framework, dynamically generated and injected via JavaScript for optimal performance and flexibility.</p>
+            <button id="heroCtaButton" class="ck-btn ck-btn-primary ck-btn-lg ck-anim-pulse ck-rounded-pill">Explore Components</button>
+        </div>
+    </header>
+
+    <main class="ck-container">
+
+        <section id="getting-started" class="section ck-fade-in-section">
+            <h2><span id="gettingStartedIcon"></span> Getting Started</h2>
+            <p>Integrating Caelok UI into your project is straightforward. You just need to include the <code>framework.js</code> script and optionally configure it.</p>
+
+            <h4>1. Include the Script</h4>
+            <p>Add the <code>&lt;script&gt;</code> tag to your HTML file, preferably before the closing <code>&lt;/body&gt;</code> tag or in the <code>&lt;head&gt;</code> with the <code>defer</code> attribute.</p>
+            <div class="code-snippet"><pre><span class="comment">&lt;!-- In your HTML file --&gt;</span>
+<span class="html-tag">&lt;script</span> <span class="html-attr-name">src=</span><span class="html-attr-value">"framework.js"</span> <span class="html-attr-name">defer</span><span class="html-tag">&gt;&lt;/script&gt;</span></pre></div>
+
+            <h4>2. Automatic Initialization</h4>
+            <p>The framework can initialize automatically upon page load. If <code>framework.js</code> doesn't find a <code>window.caelokConfig</code> object, it will use its default settings.</p>
+
+            <h4>3. Manual Initialization (with Options)</h4>
+            <p>To customize the initialization (e.g., change the class prefix or initial theme), you can define a <code>window.caelokConfig</code> object before loading the script, or instantiate it manually after <code>framework.js</code> has loaded:</p>
+            <div class="code-snippet">
+<pre><span class="comment">&lt;!-- Option 1: Global Configuration (before framework.js) --&gt;</span>
+<span class="html-tag">&lt;script&gt;</span>
+  <span class="js-keyword">window</span>.caelokConfig = {
+    prefix: <span class="js-string">'my-prefix-'</span>,
+    theme: {
+      colors: {
+        primary: <span class="js-string">'#ff6347'</span> <span class="comment">// Tomato red</span>
+      }
+    }
+  };
+<span class="html-tag">&lt;/script&gt;</span>
+<span class="html-tag">&lt;script</span> <span class="html-attr-name">src=</span><span class="html-attr-value">"framework.js"</span> <span class="html-attr-name">defer</span><span class="html-tag">&gt;&lt;/script&gt;</span>
+
+<span class="comment">&lt;!-- Option 2: Manual Instantiation (after framework.js is loaded) --&gt;</span>
+<span class="comment">&lt;!-- &lt;script src="framework.js"&gt;&lt;/script&gt; --&gt; &lt;!-- Ensure framework.js is already loaded --&gt;</span>
+<span class="html-tag">&lt;script&gt;</span>
+  <span class="js-keyword">document</span>.addEventListener(<span class="js-string">'DOMContentLoaded'</span>, () => {
+    <span class="comment">// This script block runs for this demo page.
+    // If window.Caelok wasn't auto-initialized by framework.js,
+    // this page's script will attempt to initialize it with default settings.
+    // For explicit custom configuration here:
+    /*
+    if (typeof CaelokFramework === 'function' && !window.MyFramework) {
+        const customOptions = {
+          prefix: 'app-',
+          theme: {
+            colors: {
+              primary: '#3498db' // Peter River blue
+            }
+          }
+          // ... more options
+        };
+        window.MyFramework = new CaelokFramework(customOptions);
+        // Make sure to use window.MyFramework instead of window.Caelok if you do this.
+    }
+    */
+  });
+<span class="html-tag">&lt;/script&gt;</span></pre>
+            </div>
+             <p class="ck-mt-3">Once initialized, the framework will inject the necessary styles into the document's <code>&lt;head&gt;</code>, and the global variable (<code>window.Caelok</code> by default) will be available to interact with its API.</p>
+        </section>
+
+        <section id="layout" class="section ck-fade-in-section">
+            <h2><span id="layoutIcon"></span> Layout System</h2>
+            <p>Caelok UI uses a powerful Flexbox-based grid system to build responsive layouts efficiently.</p>
+
+            <h4>Containers</h4>
+            <p>Use <code>.ck-container</code> for a responsive max-width container or <code>.ck-container-fluid</code> for a full-width (100%) container.</p>
+            <div class="component-example">
+                <div class="ck-container ck-bg-light ck-p-3 ck-mb-2 ck-rounded"><code>.ck-container</code> (responsive fixed-width)</div>
+                <div class="ck-container-fluid ck-bg-light ck-p-3 ck-rounded"><code>.ck-container-fluid</code> (full-width)</div>
+            </div>
+            <div class="code-snippet"><pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-container"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-container-fluid"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span></pre></div>
+
+            <h4>Rows and Columns</h4>
+            <p>Rows (<code>.ck-row</code>) are wrappers for columns. Columns (<code>.ck-col-*</code>, <code>.ck-col-&lt;bp&gt;-*</code>) define the width and layout.</p>
+            <div class="component-example">
+                <div class="ck-row">
+                    <div class="ck-col-12 ck-col-md-6 ck-col-lg-4 ck-bg-secondary ck-text-white ck-p-3 ck-border ck-rounded">Column 1 (md-6, lg-4)</div>
+                    <div class="ck-col-12 ck-col-md-6 ck-col-lg-4 ck-bg-secondary ck-text-white ck-p-3 ck-border ck-rounded">Column 2 (md-6, lg-4)</div>
+                    <div class="ck-col-12 ck-col-lg-4 ck-bg-secondary ck-text-white ck-p-3 ck-border ck-rounded">Column 3 (lg-4)</div>
+                </div>
+            </div>
+            <div class="code-snippet">
+<pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-row"</span><span class="html-tag">&gt;</span>
+  <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-col-12 ck-col-md-6 ck-col-lg-4"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+  <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-col-12 ck-col-md-6 ck-col-lg-4"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+  <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-col-12 ck-col-lg-4"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></pre>
+            </div>
+        </section>
+
+        <section id="utilities" class="section ck-fade-in-section">
+            <h2><span id="utilitiesIcon"></span> Utility Classes</h2>
+            <p>Caelok UI provides a wide range of utility classes to apply styles quickly without writing custom CSS.</p>
+
+            <h4>Display</h4>
+             <div class="component-example">
+                <span class="ck-d-inline-block ck-p-2 ck-bg-primary ck-text-white ck-me-1">.ck-d-inline-block</span>
+                <span class="ck-d-block ck-p-2 ck-bg-info ck-text-white ck-mt-1">.ck-d-block</span>
+            </div>
+            <div class="code-snippet"><pre>.ck-d-block, .ck-d-inline, .ck-d-flex, .ck-d-grid, .ck-d-none, ...
+.ck-d-md-flex, ... <span class="comment">(responsive variants)</span></pre></div>
+
+            <h4>Spacing (Margins & Paddings)</h4>
+            <p>Use <code>.ck-m-*</code> for margins and <code>.ck-p-*</code> for paddings. Suffixes indicate side (<code>t, b, s, e, x, y</code>) and size (<code>0-9</code>).</p>
+            <div class="component-example">
+                <div class="ck-p-3 ck-bg-light ck-mb-2 ck-border ck-rounded">Padding 3 (<code>.ck-p-3</code>)</div>
+                <div class="ck-mt-4 ck-bg-info ck-text-white ck-p-2 ck-border ck-rounded">Margin Top 4 (<code>.ck-mt-4</code>)</div>
+            </div>
+            <div class="code-snippet"><pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-p-3"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span> <span class="comment">&lt;!-- padding: var(--ck-spacing-3) --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-mt-md-4"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span> <span class="comment">&lt;!-- margin-top on md breakpoint and up --&gt;</span></pre></div>
+
+            <h4>Colors</h4>
+            <p>Apply text and background colors with <code>.ck-text-*</code> and <code>.ck-bg-*</code>.</p>
+            <div class="component-example">
+                <div class="ck-row color-palette">
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-primary">.ck-bg-primary</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-secondary">.ck-bg-secondary</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-success">.ck-bg-success</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-danger">.ck-bg-danger</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-warning">.ck-bg-warning</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-info">.ck-bg-info</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-light">.ck-bg-light</div>
+                    <div class="ck-col-6 ck-col-md-3 ck-bg-dark">.ck-bg-dark</div>
+                </div>
+                <p class="ck-text-primary ck-mt-3 ck-fw-bold">This text is using the <code>.ck-text-primary</code> class.</p>
+            </div>
+
+            <h4>Typography, Borders, Shadows, Flexbox...</h4>
+            <p>Explore the full documentation (or the <code>framework.js</code> source code) to discover all available utility classes.</p>
+        </section>
+
+        <section id="components" class="section ck-fade-in-section">
+            <h2><span id="componentsIcon"></span> Components</h2>
+            <p>Caelok UI includes a set of pre-styled, ready-to-use components.</p>
+
+            <h4>Buttons</h4>
+            <div class="component-example">
+                <h5>Button Variants</h5>
+                <button type="button" class="ck-btn ck-btn-primary ck-me-1 ck-mb-1">Primary</button>
+                <button type="button" class="ck-btn ck-btn-secondary ck-me-1 ck-mb-1">Secondary</button>
+                <button type="button" class="ck-btn ck-btn-success ck-me-1 ck-mb-1">Success</button>
+                <button type="button" class="ck-btn ck-btn-danger ck-me-1 ck-mb-1">Danger</button>
+                <button type="button" class="ck-btn ck-btn-warning ck-me-1 ck-mb-1">Warning</button>
+                <button type="button" class="ck-btn ck-btn-info ck-me-1 ck-mb-1">Info</button>
+                <button type="button" class="ck-btn ck-btn-light ck-me-1 ck-mb-1">Light</button>
+                <button type="button" class="ck-btn ck-btn-dark ck-me-1 ck-mb-1">Dark</button>
+                <button type="button" class="ck-btn ck-btn-link ck-me-1 ck-mb-1">Link</button>
+                <h5 class="ck-mt-3">Outline Buttons</h5>
+                <button type="button" class="ck-btn ck-btn-outline-primary ck-me-1 ck-mb-1">Primary</button>
+                <button type="button" class="ck-btn ck-btn-outline-secondary ck-me-1 ck-mb-1">Secondary</button>
+                 <h5 class="ck-mt-3">Button Sizes</h5>
+                <button type="button" class="ck-btn ck-btn-primary ck-btn-sm ck-me-1 ck-mb-1">Small</button>
+                <button type="button" class="ck-btn ck-btn-secondary ck-me-1 ck-mb-1">Default</button>
+                <button type="button" class="ck-btn ck-btn-success ck-btn-lg ck-me-1 ck-mb-1">Large</button>
+            </div>
+            <div class="code-snippet"><pre><span class="html-tag">&lt;button</span> <span class="html-attr-name">type=</span><span class="html-attr-value">"button"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn ck-btn-primary"</span><span class="html-tag">&gt;</span>Primary Button<span class="html-tag">&lt;/button&gt;</span></pre></div>
+
+            <h4>Cards</h4>
+            <div class="component-example">
+                <div class="ck-card" style="width: 20rem;"> <!-- Slightly wider card for better look -->
+                    <img src="https://placehold.co/600x400/17a2b8/ffffff?text=Caelok+Card" class="ck-card-img-top" alt="Card image placeholder">
+                    <div class="ck-card-body">
+                        <h5 class="ck-card-title">Card Title</h5>
+                        <p class="ck-card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <button class="ck-btn ck-btn-primary">Go somewhere</button>
+                    </div>
+                </div>
+            </div>
+            <div class="code-snippet">
+<pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-card"</span> <span class="html-attr-name">style=</span><span class="html-attr-value">"width: 18rem;"</span><span class="html-tag">&gt;</span>
+  <span class="html-tag">&lt;img</span> <span class="html-attr-name">src=</span><span class="html-attr-value">"..."</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-card-img-top"</span> <span class="html-attr-name">alt=</span><span class="html-attr-value">"..."</span><span class="html-tag">&gt;</span>
+  <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-card-body"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;h5</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-card-title"</span><span class="html-tag">&gt;</span>Card Title<span class="html-tag">&lt;/h5&gt;</span>
+    <span class="html-tag">&lt;p</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-card-text"</span><span class="html-tag">&gt;</span>Card content.<span class="html-tag">&lt;/p&gt;</span>
+    <span class="html-tag">&lt;a</span> <span class="html-attr-name">href=</span><span class="html-attr-value">"#"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn ck-btn-primary"</span><span class="html-tag">&gt;</span>Action<span class="html-tag">&lt;/a&gt;</span>
+  <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></pre>
+            </div>
+
+            <h4>Modals</h4>
+            <div class="component-example">
+                <button type="button" class="ck-btn ck-btn-success" id="openModalBtn">Launch Demo Modal</button>
+            </div>
+            <div class="code-snippet">
+<pre><span class="comment">&lt;!-- Button to trigger modal --&gt;</span>
+<span class="html-tag">&lt;button</span> <span class="html-attr-name">type=</span><span class="html-attr-value">"button"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn ck-btn-success"</span> <span class="html-attr-name">onclick=</span><span class="html-attr-value">"Caelok.toggleModal('#myExampleModal')"</span><span class="html-tag">&gt;</span>
+  Launch Demo Modal
+<span class="html-tag">&lt;/button&gt;</span>
+
+<span class="comment">&lt;!-- Modal Structure --&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal"</span> <span class="html-attr-name">id=</span><span class="html-attr-value">"myExampleModal"</span> <span class="html-attr-name">tabindex=</span><span class="html-attr-value">"-1"</span> <span class="html-attr-name">aria-labelledby=</span><span class="html-attr-value">"myModalLabel"</span> <span class="html-attr-name">aria-hidden=</span><span class="html-attr-value">"true"</span><span class="html-tag">&gt;</span>
+  <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-dialog"</span><span class="html-tag">&gt;</span>
+    <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-content"</span><span class="html-tag">&gt;</span>
+      <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-header"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;h5</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-title"</span> <span class="html-attr-name">id=</span><span class="html-attr-value">"myModalLabel"</span><span class="html-tag">&gt;</span>Modal Title<span class="html-tag">&lt;/h5&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr-name">type=</span><span class="html-attr-value">"button"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn-close"</span> <span class="html-attr-name">onclick=</span><span class="html-attr-value">"Caelok.toggleModal('#myExampleModal')"</span> <span class="html-attr-name">aria-label=</span><span class="html-attr-value">"Close"</span><span class="html-tag">&gt;&lt;/button&gt;</span>
+      <span class="html-tag">&lt;/div&gt;</span>
+      <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-body"</span><span class="html-tag">&gt;</span>
+        This is the modal body content. You can put any HTML here.
+      <span class="html-tag">&lt;/div&gt;</span>
+      <span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-modal-footer"</span><span class="html-tag">&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr-name">type=</span><span class="html-attr-value">"button"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn ck-btn-secondary"</span> <span class="html-attr-name">onclick=</span><span class="html-attr-value">"Caelok.toggleModal('#myExampleModal')"</span><span class="html-tag">&gt;</span>Close<span class="html-tag">&lt;/button&gt;</span>
+        <span class="html-tag">&lt;button</span> <span class="html-attr-name">type=</span><span class="html-attr-value">"button"</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-btn ck-btn-primary"</span><span class="html-tag">&gt;</span>Save Changes<span class="html-tag">&lt;/button&gt;</span>
+      <span class="html-tag">&lt;/div&gt;</span>
+    <span class="html-tag">&lt;/div&gt;</span>
+  <span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;/div&gt;</span></pre>
+            </div>
+
+            <h4>Alerts</h4>
+            <div class="component-example">
+                <div class="ck-alert ck-alert-success ck-d-flex ck-align-items-center" role="alert">
+                  <span id="alertSuccessIcon" class="ck-me-2"></span>
+                  <div>A simple success alert with <a href="#" class="ck-alert-link">an example link</a>.</div>
+                </div>
+                <div class="ck-alert ck-alert-danger ck-d-flex ck-justify-content-between ck-align-items-center" role="alert">
+                    <div><span id="alertDangerIcon" class="ck-me-2"></span>A simple danger alert.</div>
+                    <button type="button" class="ck-btn-close" onclick="this.parentElement.style.display='none'" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="code-snippet">
+<pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-alert ck-alert-success"</span> <span class="html-attr-name">role=</span><span class="html-attr-value">"alert"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span></pre>
+            </div>
+        </section>
+
+        <section id="icons" class="section ck-fade-in-section">
+            <h2><span id="iconsIcon"></span> Iconography</h2>
+            <p>Caelok UI makes it easy to insert SVG icons. Use the <code>Caelok.getIcon(iconName, attributes)</code> API.</p>
+            <div class="component-example">
+                <div class="icon-gallery">
+                    <!-- Icons will be dynamically inserted here by JavaScript -->
+                </div>
+            </div>
+            <div class="code-snippet">
+<pre><span class="comment">&lt;!-- In your HTML --&gt;</span>
+<span class="html-tag">&lt;span</span> <span class="html-attr-name">id=</span><span class="html-attr-value">"icon-container"</span><span class="html-tag">&gt;&lt;/span&gt;</span>
+
+<span class="comment">&lt;!-- In your JavaScript --&gt;</span>
+<span class="html-tag">&lt;script&gt;</span>
+  <span class="js-keyword">document</span>.addEventListener(<span class="js-string">'DOMContentLoaded'</span>, () => {
+    <span class="js-keyword">if</span> (<span class="js-keyword">window</span>.Caelok) {
+      <span class="js-keyword">const</span> iconContainer = <span class="js-keyword">document</span>.getElementById(<span class="js-string">'icon-container'</span>);
+      <span class="js-keyword">const</span> myIcon = <span class="js-keyword">window</span>.Caelok.getIcon(<span class="js-string">'check'</span>, { <span class="html-attr-name">width</span>: <span class="js-string">'24'</span>, <span class="html-attr-name">height</span>: <span class="js-string">'24'</span>, <span class="html-attr-name">class</span>: <span class="js-string">'ck-text-success'</span> });
+      <span class="js-keyword">if</span> (myIcon) {
+        iconContainer.appendChild(myIcon);
+      }
+    }
+  });
+<span class="html-tag">&lt;/script&gt;</span></pre>
+            </div>
+            <p>Default available icons include: <code>arrow-right</code>, <code>check</code>, <code>x</code>, <code>menu</code>, <code>search</code>. You can add more to the framework's configuration.</p>
+        </section>
+
+        <section id="animations" class="section ck-fade-in-section">
+            <h2><span id="animationsIcon"></span> Animations</h2>
+            <p>Add predefined animations to your elements with simple utility classes.</p>
+            <div class="component-example">
+                <button class="ck-btn ck-btn-info ck-anim-pulse ck-me-2">Pulse Animation</button>
+                <span class="ck-icon ck-text-primary ck-anim-spin" style="font-size: 2.5rem;" id="spinIconDemo"></span>
+                <div id="fadeInDemoBox" class="ck-p-3 ck-bg-light ck-mt-3 ck-border ck-rounded" style="opacity:0;">This box will appear with a fadeIn effect.</div>
+                <button class="ck-btn ck-btn-secondary ck-mt-2" id="triggerFadeIn">Trigger fadeIn</button>
+            </div>
+            <div class="code-snippet">
+<pre><span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-anim-fadeIn"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-anim-pulse"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+<span class="html-tag">&lt;div</span> <span class="html-attr-name">class=</span><span class="html-attr-value">"ck-anim-spin"</span><span class="html-tag">&gt;</span>...<span class="html-tag">&lt;/div&gt;</span>
+<span class="comment">&lt;!-- More animations available: fadeOut, slideInUp --&gt;</span></pre>
+            </div>
+        </section>
+
+        <section id="customization" class="section ck-fade-in-section">
+            <h2><span id="customizationIcon"></span> Customization & Theming</h2>
+            <p>Caelok UI is designed for easy customization through CSS Custom Properties and a theming API.</p>
+            <h4>CSS Variables</h4>
+            <p>Modify global CSS variables to change the appearance. For example, to change the primary color:</p>
+            <div class="code-snippet">
+<pre><span class="js-keyword">:root</span> {
+  <span class="html-attr-name">--ck-theme-colors-primary</span>: <span class="js-string">'#YOUR_NEW_COLOR_HERE'</span>;
+  <span class="html-attr-name">--ck-typography-fontFamilyBase</span>: <span class="js-string">'Your New Font, sans-serif'</span>;
+  <span class="comment">/* ...and many more variables! */</span>
+}</pre>
+            </div>
+
+            <h4><code>updateTheme(newTheme)</code> API</h4>
+            <p>Change the theme dynamically using JavaScript:</p>
+            <div class="component-example">
+                <button class="ck-btn ck-btn-warning" id="changeThemeBtn">Switch to Example Theme</button>
+                <button class="ck-btn ck-btn-outline-secondary ck-ms-2" id="resetThemeBtn">Reset to Default Theme</button>
+            </div>
+            <div class="code-snippet">
+<pre><span class="js-keyword">window</span>.Caelok.updateTheme({
+  <span class="html-attr-name">colors</span>: {
+    <span class="html-attr-name">primary</span>: <span class="js-string">'#e83e8c'</span>, <span class="comment">// Pink</span>
+    <span class="html-attr-name">bodyBg</span>: <span class="js-string">'#333'</span>,
+    <span class="html-attr-name">textColor</span>: <span class="js-string">'#f8f9fa'</span>
+  },
+  <span class="html-attr-name">typography</span>: {
+    <span class="html-attr-name">fontFamilyBase</span>: <span class="js-string">'Georgia, serif'</span>
+  }
+});</pre>
+            </div>
+        </section>
+    </main>
+
+    <footer class="ck-container ck-text-center ck-py-5 ck-mt-5 ck-border-top">
+        <p>&copy; 2025 Caelok UI. Designed with the Caelok Framework.</p>
+        <p><a href="#mainNav" class="ck-text-secondary">Back to top</a></p>
+    </footer>
+
+    <div class="ck-modal" id="myExampleModal" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="ck-modal-dialog">
+        <div class="ck-modal-content ck-anim-slideInUp">
+          <div class="ck-modal-header">
+            <h5 class="ck-modal-title" id="myModalLabel">Example Modal Title</h5>
+            <button type="button" class="ck-btn-close" id="closeModalHeaderBtn" aria-label="Close"></button>
+          </div>
+          <div class="ck-modal-body">
+            <p>This is a demonstration modal powered by the Caelok UI Framework.</p>
+            <p>You can fully customize its content and behavior.</p>
+            <div class="ck-form-check ck-mt-3">
+                <input class="ck-form-check-input" type="checkbox" value="" id="flexCheckDefaultDemo">
+                <label class="ck-form-check-label" for="flexCheckDefaultDemo">
+                    Agree to terms
+                </label>
+            </div>
+          </div>
+          <div class="ck-modal-footer">
+            <button type="button" class="ck-btn ck-btn-secondary" id="closeModalFooterBtn">Close</button>
+            <button type="button" class="ck-btn ck-btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        let frameworkInstance = window.Caelok;
+
+        if (!frameworkInstance) {
+            if (typeof CaelokFramework === 'function') {
+                console.warn('Caelok Framework not auto-initialized. Initializing with default options.');
+                try {
+                    window.Caelok = new CaelokFramework();
+                    frameworkInstance = window.Caelok;
+                } catch (e) {
+                    console.error('Error initializing CaelokFramework:', e);
+                    return; 
+                }
+            } else {
+                console.error('CaelokFramework class not defined. Ensure framework.js is loaded.');
+                return; 
+            }
+        }
+        if (!frameworkInstance) {
+            console.error('Caelok Framework is not initialized. UI interactions might fail.');
+            return;
+        }
+
+        // Default theme options (used for reset and initial state if needed)
+        const defaultThemeOptions = JSON.parse(JSON.stringify(frameworkInstance.options.theme)); // Deep copy
+
+        // Inject Nav Brand Icon
+        const navBrandIconContainer = document.getElementById('navBrandIconContainer');
+        if (navBrandIconContainer) {
+            // Define this icon in framework.js or ensure it's loaded for the demo
+            if (!frameworkInstance.options.icons.caelokLogo) {
+                 frameworkInstance.options.icons.caelokLogo = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zM4.5 5.5a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5z"/></svg>';
+            }
+            const brandIcon = frameworkInstance.getIcon('caelokLogo', { class: 'ck-text-primary' });
+            if (brandIcon) navBrandIconContainer.appendChild(brandIcon);
+        }
+
+
+        document.querySelectorAll('.ck-nav-link[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    const navbarHeight = document.getElementById('mainNav')?.offsetHeight || 0;
+                    const elementPosition = targetElement.getBoundingClientRect().top;
+                    const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20; // Extra 20px padding
+
+                    window.scrollTo({ top: offsetPosition, behavior: "smooth" });
+                    const navbarCollapse = document.getElementById('navbarNavContent');
+                    if (navbarCollapse?.classList.contains('show')) {
+                         frameworkInstance.toggleNavbar('#navbarNavContent');
+                    }
+                }
+            });
+        });
+        
+        const heroCtaButton = document.getElementById('heroCtaButton');
+        if(heroCtaButton){
+            heroCtaButton.addEventListener('click', () => {
+                const componentsSection = document.getElementById('components');
+                if (componentsSection) {
+                     const navbarHeight = document.getElementById('mainNav')?.offsetHeight || 0;
+                     const elementPosition = componentsSection.getBoundingClientRect().top;
+                     const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - 20;
+                     window.scrollTo({ top: offsetPosition, behavior: 'smooth'});
+                }
+            });
+        }
+
+        const navbarToggler = document.getElementById('navbarToggler');
+        if (navbarToggler) {
+            navbarToggler.addEventListener('click', () => frameworkInstance.toggleNavbar('#navbarNavContent'));
+        }
+
+        const openModalButton = document.getElementById('openModalBtn');
+        if (openModalButton) {
+            openModalButton.addEventListener('click', () => frameworkInstance.toggleModal('#myExampleModal'));
+        }
+        document.getElementById('closeModalHeaderBtn')?.addEventListener('click', () => frameworkInstance.toggleModal('#myExampleModal'));
+        document.getElementById('closeModalFooterBtn')?.addEventListener('click', () => frameworkInstance.toggleModal('#myExampleModal'));
+        
+        // Define additional icons for demo purposes if they are not in framework.js
+        if (frameworkInstance.options && frameworkInstance.options.icons){
+            const demoIcons = {
+                'grid': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3A1.5 1.5 0 0 1 15 10.5v3A1.5 1.5 0 0 1 13.5 15h-3A1.5 1.5 0 0 1 9 13.5v-3z"/></svg>',
+                'settings': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8.837 1.626a.5.5 0 0 0-.674 0l-.962.642A.5.5 0 0 1 7 2.5V1.65a.5.5 0 0 0-.968-.182l-.325.65A.5.5 0 0 1 5.5 2.5V1.65a.5.5 0 0 0-.968-.182l-.325.65A.5.5 0 0 1 4 2.5V1.65a.5.5 0 0 0-.968-.182l-.962.642a.5.5 0 0 0-.163.674l.325.65A.5.5 0 0 1 2.5 4H1.65a.5.5 0 0 0-.182.968l.65.325A.5.5 0 0 1 2.5 5.5H1.65a.5.5 0 0 0-.182.968l.65.325A.5.5 0 0 1 2.5 7H1.65a.5.5 0 0 0-.182.968l.962.642a.5.5 0 0 0 .674.163l.65-.325A.5.5 0 0 1 4 7.5h.85a.5.5 0 0 0 .968.182l.325-.65A.5.5 0 0 1 5.5 7.5h.85a.5.5 0 0 0 .968.182l.325-.65A.5.5 0 0 1 7 7.5h.85a.5.5 0 0 0 .968.182l.962-.642a.5.5 0 0 0 .163-.674l-.325-.65A.5.5 0 0 1 9.5 6h.85a.5.5 0 0 0 .182-.968l-.65-.325A.5.5 0 0 1 9.5 4.5h.85a.5.5 0 0 0 .182-.968l-.65-.325A.5.5 0 0 1 9.5 2.5h.85a.5.5 0 0 0 .182-.968zM14 7.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zM5.5 6a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zM8 9.5A1.5 1.5 0 1 0 8 6.5a1.5 1.5 0 0 0 0 3z"/></svg>',
+                'package': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M1.5 0A1.5 1.5 0 0 0 0 1.5v3A1.5 1.5 0 0 0 1.5 6h13A1.5 1.5 0 0 0 16 4.5v-3A1.5 1.5 0 0 0 14.5 0h-13zM15 7H1v1.5A1.5 1.5 0 0 0 2.5 10H6v1H2.5A2.5 2.5 0 0 1 0 8.5V7H.5a.5.5 0 0 1 0-1H15a.5.5 0 0 1 0 1H.5a.5.5 0 0 1 0-1H15v1zM0 11.5A1.5 1.5 0 0 0 1.5 13h13a1.5 1.5 0 0 0 1.5-1.5v-3A1.5 1.5 0 0 0 14.5 7H1.5A1.5 1.5 0 0 0 0 8.5v3z"/></svg>',
+                'image': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/><path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z"/></svg>',
+                'play-circle': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/><path d="M6.271 5.055a.5.5 0 0 1 .52.038l3.5 2.5a.5.5 0 0 1 0 .814l-3.5 2.5A.5.5 0 0 1 6 10.5v-5a.5.5 0 0 1 .271-.445z"/></svg>',
+                'palette': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M8 5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zm4 3a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM5.5 7a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm.5 6a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/><path d="M16 8c0 3.15-1.866 5.969-4.543 7.098-.6.217-.984.835-.984 1.482A.5.5 0 0 1 10 17H6a.5.5 0 0 1-.473-.42C5.252 14.316 4 11.076 4 8c0-3.15 1.866-5.969 4.543-7.098.6-.217.984-.835.984-1.482A.5.5 0 0 1 10 0h.5a.5.5 0 0 1 .5.5c.291.456.402.902.402 1.327 0 1.402-1.578 2.64-4.243 2.64S2.5 3.229 2.5 1.827c0-.425.11-.87.402-1.327A.5.5 0 0 1 3.5 0h.5a.5.5 0 0 1 .473.42C7.248 2.316 9.5 5.076 9.5 8c0 2.924-2.252 5.684-4.973 6.58A.5.5 0 0 1 4 15H3.5a.5.5 0 0 1-.5-.5c-.291-.456-.402-.902-.402-1.327C3 11.698 4.578 10.46 7.243 10.46S12 11.699 12 13.173c0 .425-.11.87-.402 1.327a.5.5 0 0 1-.473.5H11a.5.5 0 0 1-.473-.42C7.748 13.684 5.5 10.924 5.5 8c0-2.924 2.252-5.684 4.973-6.58A.5.5 0 0 1 11 1h.5a.5.5 0 0 1 .5.5c.291.456.402.902.402 1.327 0 1.402-1.578 2.64-4.243 2.64S3.5 3.229 3.5 1.827c0-.425.11.87.402 1.327A.5.5 0 0 1 4.5 1H5a.5.5 0 0 1 .473.42C8.248 2.316 10.5 5.076 10.5 8s-2.252 5.684-4.973 6.58A.5.5 0 0 1 5 15H4.5a.5.5 0 0 1-.5-.5c-.291-.456-.402-.902-.402-1.327C4 11.698 5.578 10.46 8.243 10.46S13 11.699 13 13.173c0 .425-.11.87-.402 1.327a.5.5 0 0 1-.473.5H12a.5.5 0 0 1-.473-.42A6.96 6.96 0 0 0 8.243 8z"/></svg>',
+                'loader': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-repeat" viewBox="0 0 16 16"><path d="M11.534 7h3.932a.25.25 0 0 1 .192.41l-1.966 2.36a.25.25 0 0 1-.384 0l-1.966-2.36a.25.25 0 0 1 .192-.41zm-11 2h3.932a.25.25 0 0 0 .192-.41L2.692 6.23a.25.25 0 0 0-.384 0L.342 8.59A.25.25 0 0 0 .534 9z"/><path fill-rule="evenodd" d="M8 3c-1.552 0-2.94.707-3.857 1.818a.5.5 0 1 1-.771-.636A6.002 6.002 0 0 1 13.917 7H12.9A5.002 5.002 0 0 0 8 3zM3.1 9a5.002 5.002 0 0 0 8.757 2.182.5.5 0 1 1 .771.636A6.002 6.002 0 0 1 2.083 9H3.1z"/></svg>',
+                'alert-success': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-circle-fill" viewBox="0 0 16 16"><path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/></svg>',
+                'alert-danger': '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-triangle-fill" viewBox="0 0 16 16"><path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/></svg>'
+            };
+            for (const iconName in demoIcons) {
+                if (!frameworkInstance.options.icons[iconName]) {
+                    frameworkInstance.options.icons[iconName] = demoIcons[iconName];
+                }
+            }
+        }
+        
+        const iconLocations = {
+            'gettingStartedIcon': 'arrow-right', 'layoutIcon': 'grid', 'utilitiesIcon': 'settings', 
+            'componentsIcon': 'package', 'iconsIcon': 'image', 'animationsIcon': 'play-circle', 
+            'customizationIcon': 'palette', 'spinIconDemo': 'loader', 'alertSuccessIcon': 'alert-success', 'alertDangerIcon': 'alert-danger'
+        };
+
+        for (const spanId in iconLocations) {
+            const iconName = iconLocations[spanId];
+            const spanElement = document.getElementById(spanId);
+            if (spanElement) {
+                const iconSvg = frameworkInstance.getIcon(iconName, { class: 'ck-me-2' }); // Class for margin
+                if (iconSvg) {
+                    // Clear previous icon if any, then prepend new one
+                    while(spanElement.firstChild && spanElement.firstChild.tagName === 'svg') {
+                        spanElement.removeChild(spanElement.firstChild);
+                    }
+                    spanElement.prepend(iconSvg);
+                }
+            }
+        }
+        
+        const iconGallery = document.querySelector('.icon-gallery');
+        if (iconGallery && frameworkInstance.options && frameworkInstance.options.icons) {
+            iconGallery.innerHTML = ''; 
+            Object.keys(frameworkInstance.options.icons).forEach(iconName => {
+                const iconElement = frameworkInstance.getIcon(iconName);
+                if (iconElement) {
+                    const item = document.createElement('div');
+                    item.className = 'icon-item';
+                    item.appendChild(iconElement);
+                    const nameSpan = document.createElement('span');
+                    nameSpan.className = 'icon-name';
+                    nameSpan.textContent = iconName;
+                    item.appendChild(nameSpan);
+                    iconGallery.appendChild(item);
+                }
+            });
+        }
+
+        const triggerFadeInButton = document.getElementById('triggerFadeIn');
+        const fadeInDemoBox = document.getElementById('fadeInDemoBox');
+        if(triggerFadeInButton && fadeInDemoBox){
+            triggerFadeInButton.addEventListener('click', () => {
+                fadeInDemoBox.style.opacity = '0'; 
+                frameworkInstance.removeClass(fadeInDemoBox, 'ck-anim-fadeIn');
+                void fadeInDemoBox.offsetWidth; 
+                frameworkInstance.addClass(fadeInDemoBox, 'ck-anim-fadeIn');
+            });
+        }
+
+        const mainNav = document.getElementById('mainNav'); 
+        const changeThemeButton = document.getElementById('changeThemeBtn');
+        if (changeThemeButton) {
+            changeThemeButton.addEventListener('click', () => {
+                frameworkInstance.updateTheme({
+                    colors: { primary: '#6f42c1', secondary: '#6c757d', bodyBg: '#f0e6ff', textColor: '#343a40', linkColor: '#583799', light: '#fdfdfe', dark: '#212529' },
+                    typography: { fontFamilyBase: '"Palatino Linotype", "Book Antiqua", Palatino, serif' },
+                    borders: { radius: '0.5rem', color: '#cab0de' }
+                });
+                if(mainNav) {
+                    mainNav.classList.remove(frameworkInstance.options.prefix + 'navbar-dark', frameworkInstance.options.prefix + 'bg-dark');
+                    mainNav.classList.add(frameworkInstance.options.prefix + 'navbar-light', frameworkInstance.options.prefix + 'bg-light');
+                }
+            });
+        }
+        
+        // Reset theme button
+        const resetThemeBtn = document.getElementById('resetThemeBtn');
+        if (resetThemeBtn) {
+            resetThemeBtn.addEventListener('click', () => {
+                frameworkInstance.updateTheme(JSON.parse(JSON.stringify(defaultThemeOptions))); // Use the deep copied default
+                 if(mainNav) {
+                    mainNav.classList.remove(frameworkInstance.options.prefix + 'navbar-dark', frameworkInstance.options.prefix + 'bg-dark');
+                    mainNav.classList.add(frameworkInstance.options.prefix + 'navbar-light', frameworkInstance.options.prefix + 'bg-light');
+                }
+                document.getElementById('themeSelector').value = 'default'; // Reset dropdown
+            });
+        }
+
+
+        const themeSelector = document.getElementById('themeSelector');
+        if (themeSelector && mainNav) {
+            themeSelector.addEventListener('change', (event) => {
+                const selectedTheme = event.target.value;
+                let newTheme = {};
+                const prefix = frameworkInstance.options.prefix;
+
+                if (selectedTheme === 'default') {
+                    newTheme = JSON.parse(JSON.stringify(defaultThemeOptions)); // Reset to original defaults
+                    mainNav.classList.remove(prefix + 'navbar-dark', prefix + 'bg-dark');
+                    mainNav.classList.add(prefix + 'navbar-light', prefix + 'bg-light');
+                } else if (selectedTheme === 'dark') {
+                    newTheme = {
+                        colors: { primary: '#0d6efd', secondary: '#6c757d', success: '#198754', danger: '#dc3545', warning: '#ffc107', info: '#0dcaf0', light: '#343a40', dark: '#f8f9fa',  white: '#000000', black: '#ffffff', bodyBg: '#1a1a1a', textColor: '#e0e0e0', linkColor: '#6ea8fe'},
+                        typography: { fontFamilyBase: "'Roboto', sans-serif" }, // Ensure fonts are reapplied if changed by other themes
+                        borders: { color: '#495057', radius: '0.25rem' }
+                    };
+                     mainNav.classList.remove(prefix + 'navbar-light', prefix + 'bg-light');
+                     mainNav.classList.add(prefix + 'navbar-dark', prefix + 'bg-dark');
+                } else if (selectedTheme === 'corporate') {
+                    newTheme = {
+                        colors: { primary: '#004085', secondary: '#6c757d', success: '#155724', danger: '#721c24', warning: '#856404', info: '#0c5460', light: '#f8f9fa', dark: '#343a40', white: '#ffffff', black: '#000000', bodyBg: '#e9ecef', textColor: '#212529', linkColor: '#004085' },
+                        typography: { fontFamilyBase: "'Poppins', sans-serif" },
+                        borders: { radius: '0.15rem', color: '#ced4da' }
+                    };
+                    mainNav.classList.remove(prefix + 'navbar-dark', prefix + 'bg-dark');
+                    mainNav.classList.add(prefix + 'navbar-light', prefix + 'bg-light');
+                }
+                frameworkInstance.updateTheme(newTheme);
+            });
+        }
+
+        const sectionsToFade = document.querySelectorAll('.ck-fade-in-section');
+        if (sectionsToFade.length > 0) {
+            const fadeInObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('ck-is-visible');
+                        observer.unobserve(entry.target); 
+                    }
+                });
+            }, { threshold: 0.1 }); 
+
+            sectionsToFade.forEach(section => fadeInObserver.observe(section));
+        }
+    });
+    </script>
+
+</body>
+</html>
